@@ -108,12 +108,13 @@ void ImageClass::showImage() {
 	imshow("window", this->image);
 }
 
-void ImageClass::showImage(const Mat& image) {
-	imshow("Image", image);
+void ImageClass::showImage(const Mat& tempImage) {
+	imshow("Static image", tempImage);
 }
 void ImageClass::filtrImage() {
 	Mat tempImage = Mat(image);
-	GaussianBlur(this->image, tempImage, Size(5,5), 0);
+	GaussianBlur(this->image, tempImage, Size(3,3), 0);
+	//medianBlur(this->image, tempImage, 3);
 	image = tempImage;
 }
 
@@ -132,8 +133,16 @@ void ImageClass::binaryImage() {
 	double threshold = this->calculateThreshold(histogramTab, MinAndMax);
 	std::cout << "THRESHOLD: " << threshold;
 
-	cv::threshold(this->image, this->image, threshold, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+	cv::threshold(this->image, this->image, threshold, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 	//cv::threshold(this->image, this->image, threshold, 255, 0);
-	showImage(this->image);
 	delete[] histogramTab;
+}
+
+void ImageClass::skeletozation() {
+	Skeleton skeleton(this->image);
+	Mat temp = skeleton.makeSkeleton();
+	/*Skeleton skeleton2(temp);
+	Mat temp2 = skeleton.makeSkeleton();*/
+	showImage(temp);
+	this->image = temp;
 }

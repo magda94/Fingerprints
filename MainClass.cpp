@@ -6,13 +6,17 @@ using namespace cv;
 
 int main(int, char**)
 {
-	Mat img = imread("FingerDatabase/p01/s01.bmp", CV_LOAD_IMAGE_GRAYSCALE);
+	Mat img = imread("FingerDatabase/p11/k01.bmp", CV_LOAD_IMAGE_GRAYSCALE);
+	//Mat img = imread("FingerDatabase/lena.png", CV_LOAD_IMAGE_GRAYSCALE);
 
 	std::cout << "Create ImageClass\n\n";
 	ImageClass imageClass = ImageClass(img);
 	imageClass.showImage();
 	imageClass.filtrImage();
 	imageClass.binaryImage();
+	imageClass.skeletozation();
+
+	imageClass.showImage();
 
 	waitKey(0);
 	return 0;
