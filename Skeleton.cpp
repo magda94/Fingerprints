@@ -146,7 +146,10 @@ Skeleton::Skeleton(const Mat& image) {
 
 Mat Skeleton::makeSkeleton() {
 
-	bool flag = false;
+	bool flag1 = false;
+	bool flag2 = false;
+	bool flag3 = false;
+	bool flag4 = false;
 	bool globalFlag = false;
 	Mat temp = Mat(this->image.size(), CV_8UC1);
 	Mat temp2 = Mat(this->image.size(), CV_8UC1);
@@ -167,20 +170,20 @@ Mat Skeleton::makeSkeleton() {
 		for (int i = 1; i < this->image.rows - 1; i++) {
 			for (int j = 1; j< this->image.cols - 1; j++) {
 				if ((int)this->image.at<uchar>(i, j) == 0) {
-					flag = this->check0(i, j);
-					flag = this->check90(i,j);
-					flag = this->check180(i,j);
-					flag = this->check270(i,j);
+					flag1 = this->check0(i, j);
+					flag2 = this->check90(i,j);
+					flag3 = this->check180(i,j);
+					flag4 = this->check270(i,j);
 
-					if (flag == false) {
-						if ((int)this->image.at<uchar>(i, j) == 255)
-							globalFlag = true;
-						temp.at<uchar>(i, j) = (uchar)0;
-					}
-					else {
+					if (flag1 || flag2 || flag3 || flag4) {
 						if ((int)this->image.at<uchar>(i, j) == 0)
 							globalFlag = true;
 						temp.at<uchar>(i, j) = (uchar)255;
+					}
+					else {
+						if ((int)this->image.at<uchar>(i, j) == 255)
+							globalFlag = true;
+						temp.at<uchar>(i, j) = (uchar)0;
 					}
 				}
 				else {

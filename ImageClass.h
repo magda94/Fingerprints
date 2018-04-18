@@ -4,6 +4,7 @@
 #include "opencv2/opencv.hpp"
 
 #include "Skeleton.h"
+#include "Filter.h"
 using namespace cv;
 
 class ImageClass {
@@ -22,6 +23,7 @@ public:
 	void showImage();
 	static void showImage(const Mat& image);
 	void binaryImage();
+	void smoothImage();
 	void skeletozation();
 };
 

@@ -112,10 +112,8 @@ void ImageClass::showImage(const Mat& tempImage) {
 	imshow("Static image", tempImage);
 }
 void ImageClass::filtrImage() {
-	Mat tempImage = Mat(image);
-	GaussianBlur(this->image, tempImage, Size(3,3), 0);
-	//medianBlur(this->image, tempImage, 3);
-	image = tempImage;
+	Filter medianFilter(this->image);
+	image = medianFilter.filtrMedian();
 }
 
 void ImageClass::binaryImage() {
@@ -135,7 +133,14 @@ void ImageClass::binaryImage() {
 
 	cv::threshold(this->image, this->image, threshold, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 	//cv::threshold(this->image, this->image, threshold, 255, 0);
+	imshow("BINARY", this->image);
 	delete[] histogramTab;
+}
+
+void ImageClass::smoothImage() {
+	Filter filter(this->image);
+	Mat temp = filter.reduceHoles();
+	this->image = temp;
 }
 
 void ImageClass::skeletozation() {
