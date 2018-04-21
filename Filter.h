@@ -12,6 +12,7 @@ public:
 	Filter(const Mat& image);
 	Mat filtrMedian();
 	Mat reduceHoles();
+	Mat normalize();
 };
 
 #endif

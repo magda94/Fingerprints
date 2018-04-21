@@ -82,3 +82,27 @@ Mat Filter::reduceHoles() {
 
 	return this->image;
 }
+
+Mat Filter::normalize() {
+	int max = (int)this->image.at<uchar>(0, 0);
+	int min = (int)this->image.at<uchar>(0, 0);
+
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			if ((int)this->image.at<uchar>(i, j) < min) {
+				min = (int)this->image.at<uchar>(i, j);
+			}
+			if ((int)this->image.at<uchar>(i, j) > max) {
+				max = (int)this->image.at<uchar>(i, j);
+			}
+		}
+	}
+
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			this->image.at<uchar>(i, j) = (uchar)(255 * ((int)this->image.at<uchar>(i,j)-min)/(max-min));
+		}
+	}
+
+	return this->image;
+}

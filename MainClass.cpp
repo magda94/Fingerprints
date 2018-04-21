@@ -14,9 +14,11 @@ int main(int, char**)
 	ImageClass imageClass = ImageClass(img);
 	imageClass.showImage();
 	imageClass.filtrImage();
+	imageClass.normalizeImage();
 	imageClass.binaryImage();
 	imageClass.smoothImage();
 	imageClass.skeletozation();
+	imageClass.findMinutiae();
 
 	imageClass.showImage();
 

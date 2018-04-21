@@ -80,7 +80,7 @@ bool ImageClass::bimodalTest(double * tab, int length)
 int ImageClass::calculateThreshold(double * histogramTab, int * MinAndMax)
 {
 	int length = (MinAndMax[1] - MinAndMax[0]) + 1;
-	double threshold = 0;
+	int threshold = 0;
 
 	for (int i = 1; i < length - 1; i++) {
 		if (histogramTab[i - 1] < histogramTab[i] && histogramTab[i + 1] < histogramTab[i]) {
@@ -116,6 +116,11 @@ void ImageClass::filtrImage() {
 	image = medianFilter.filtrMedian();
 }
 
+void ImageClass::normalizeImage() {
+	Filter normalizer(this->image);
+	this->image = normalizer.normalize();
+}
+
 void ImageClass::binaryImage() {
 	//threshold(this->image, this->image, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 	Mat histogram = this->calculateHistogram(this->image);
@@ -146,8 +151,10 @@ void ImageClass::smoothImage() {
 void ImageClass::skeletozation() {
 	Skeleton skeleton(this->image);
 	Mat temp = skeleton.makeSkeleton();
-	/*Skeleton skeleton2(temp);
-	Mat temp2 = skeleton.makeSkeleton();*/
-	showImage(temp);
 	this->image = temp;
+}
+
+void ImageClass::findMinutiae() {
+	Minutiae minutiae(this->image);
+	minutiae.findMinutiae();
 }

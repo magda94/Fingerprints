@@ -5,6 +5,8 @@
 
 #include "Skeleton.h"
 #include "Filter.h"
+#include "Minutiae.h"
+
 using namespace cv;
 
 class ImageClass {
@@ -22,9 +24,11 @@ public:
 	void filtrImage();
 	void showImage();
 	static void showImage(const Mat& image);
+	void normalizeImage();
 	void binaryImage();
 	void smoothImage();
 	void skeletozation();
+	void findMinutiae();
 };
 
 #endif
