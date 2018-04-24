@@ -17,6 +17,7 @@ int main(int, char**)
 	imageClass.normalizeImage();
 	imageClass.binaryImage();
 	imageClass.smoothImage();
+	imageClass.createMask();
 	imageClass.skeletozation();
 	imageClass.findMinutiae();
 

@@ -39,6 +39,81 @@ int Filter::checkMedian(int x, int y) {
 	return result;
 }
 
+bool Filter::checkNumberOfBlack(Mat image, int x, int y) {
+	int counter = 0;
+	int threshold = 15;
+
+	for (int i = -4; i <= 4; i++) {
+		for (int j = -4; j <= 4; j++) {
+			if ((int)image.at<uchar>(x + i, y + j) == 0) {
+				counter++;
+			}
+		}
+	}
+
+	if (counter > threshold)
+		return true;
+	return false;
+}
+
+void Filter::addNeighbours(int x, int y) {
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			if (i == 0 && j == 0)
+				continue;
+			if ((int)tempFingerMask.at<uchar>(x + i, y + j) == 0) {
+				counter++;
+				//std::cout << "POINT: X: " << x + i << " Y: " << y + j <<"  COUNTER: "<<counter<< std::endl;
+				tempFingerMask.at<uchar>(x + i, y + j) = 127;
+				buforList.push_back(Point2i(x+i,y+j));
+			}
+		}
+	}
+}
+
+Mat Filter::chooseBiggest(Mat fingerMask) {
+	Mat newFingerMask;
+	vector<Point2i> biggest;
+	tempFingerMask = fingerMask.clone();
+	newFingerMask = fingerMask.clone();
+
+	//clean image
+	for (int i = 0; i < fingerMask.rows; i++) {
+		for (int j = 0; j < fingerMask.cols; j++) {
+			newFingerMask.at<uchar>(i, j) = (uchar)255;
+		}
+	}
+
+	bool flag = false;
+	for (int i = 0; i < tempFingerMask.rows; i++) {
+		for (int j = 0; j < tempFingerMask.cols; j++) {
+			if (!flag) {
+				if ((int)tempFingerMask.at<uchar>(i, j) == 0) {
+					counter++;
+					tempFingerMask.at<uchar>(i, j) = 127;
+					this->addNeighbours(i, j);
+					while (!buforList.empty()) {
+						Point2i next = buforList.back();
+						biggest.push_back(next);
+						buforList.pop_back();
+						this->addNeighbours(next.x, next.y);
+					}
+					std::cout << "\nCOUNTER: " << counter << std::endl;
+					if (counter > 10000) {
+						flag = true;
+						while (!biggest.empty()) {
+							Point2i tempPoint = biggest.back();
+							biggest.pop_back();
+							newFingerMask.at<uchar>(tempPoint.x, tempPoint.y) = (uchar)0;
+						}
+					}
+				}
+			}
+		}
+	}
+	return newFingerMask;
+}
+
 /*******************************************
 PUBLIC METHODS
 *******************************************/
@@ -105,4 +180,38 @@ Mat Filter::normalize() {
 	}
 
 	return this->image;
+}
+
+Mat Filter::createMask() {
+	Mat temp;
+	Mat fingerMask;
+	temp= this->image.clone();
+	fingerMask= this->image.clone();
+
+	int n = 0;
+	bool flag;
+	while (n < 5) {
+		for (int i = 4; i < temp.rows - 4; i++) {
+			for (int j = 4; j < temp.cols - 4; j++) {
+				flag = this->checkNumberOfBlack(temp, i, j);
+				
+				for (int k = -4; k <= 4; k++) {
+					for (int l = -4; l <= 4; l++) {
+						if (flag == true) {
+							fingerMask.at<uchar>(i + k, j + l) = (uchar)0;
+						}
+						else {
+							fingerMask.at<uchar>(i + k, j + l) = (uchar)255;
+						}
+					}
+				}
+			}
+		}
+		fingerMask.copyTo(temp);
+		n++;
+	}
+	imshow("ORG FINGERMASK", fingerMask);
+	fingerMask = this->chooseBiggest(fingerMask);
+	imshow("FINGER MASK", fingerMask);
+	return fingerMask;
 }

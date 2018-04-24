@@ -12,6 +12,7 @@ using namespace cv;
 class ImageClass {
 private:
 	Mat image;
+	Mat fingerMask;
 	Mat calculateHistogram(const Mat& image);
 	int* getMinAndMax(const Mat& histogram);
 	double* calculateHistogramTab(const Mat& histogram, int* MinAndMax,double*  histogramTab);
@@ -27,6 +28,7 @@ public:
 	void normalizeImage();
 	void binaryImage();
 	void smoothImage();
+	void createMask();
 	void skeletozation();
 	void findMinutiae();
 };

@@ -136,8 +136,8 @@ void ImageClass::binaryImage() {
 	double threshold = this->calculateThreshold(histogramTab, MinAndMax);
 	std::cout << "THRESHOLD: " << threshold;
 
-	cv::threshold(this->image, this->image, threshold, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
-	//cv::threshold(this->image, this->image, threshold, 255, 0);
+	//cv::threshold(this->image, this->image, threshold/3, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+	cv::threshold(this->image, this->image, threshold/5, 255, CV_THRESH_BINARY_INV);
 	imshow("BINARY", this->image);
 	delete[] histogramTab;
 }
@@ -148,6 +148,12 @@ void ImageClass::smoothImage() {
 	this->image = temp;
 }
 
+void ImageClass::createMask() {
+	Filter filter(this->image);
+	Mat temp = filter.createMask();
+	this->fingerMask = temp;
+}
+
 void ImageClass::skeletozation() {
 	Skeleton skeleton(this->image);
 	Mat temp = skeleton.makeSkeleton();
@@ -155,6 +161,6 @@ void ImageClass::skeletozation() {
 }
 
 void ImageClass::findMinutiae() {
-	Minutiae minutiae(this->image);
+	Minutiae minutiae(this->image, this->fingerMask);
 	minutiae.findMinutiae();
 }
