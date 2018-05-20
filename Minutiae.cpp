@@ -130,6 +130,14 @@ void Minutiae::printMinutiae(const vector<Point2i> endPointsVector, const vector
 	imshow("TEMP", temp);
 }
 
+void Minutiae::setEndPointsVector(vector<Point2i> endPointsVector) {
+	this->endPointsVectorFinal = endPointsVector;
+}
+
+void Minutiae::setBranchPointsVector(vector<Point2i> branchPointsVector) {
+	this->branchPointsVectorFinal = branchPointsVector;
+}
+
 
 
 /*******************************************
@@ -189,4 +197,18 @@ void Minutiae::findMinutiae() {
 	std::cout << "BRANCH SIZE: " << branchPointsVector.size() << std::endl;
 
 	this->printMinutiae(endPointsVector, branchPointsVector);
+
+	this->setEndPointsVector(endPointsVector);
+	this->setBranchPointsVector(branchPointsVector);
 }
+
+vector<Point2i> Minutiae::getEndPointsVector()
+{
+	return this->endPointsVectorFinal;
+}
+
+vector<Point2i> Minutiae::getBranchPointsVector()
+{
+	return this->branchPointsVectorFinal;
+}
+

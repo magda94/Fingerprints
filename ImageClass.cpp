@@ -96,8 +96,9 @@ int ImageClass::calculateThreshold(double * histogramTab, int * MinAndMax)
 /*******************************************
 PUBLIC METHODS
 *******************************************/
-ImageClass::ImageClass(const Mat& image) {
+ImageClass::ImageClass(const Mat& image, std::string filepath) {
 	this->image = image;
+	this->filepath = filepath;
 }
 
 Mat& ImageClass::getImage() {
@@ -111,6 +112,7 @@ void ImageClass::showImage() {
 void ImageClass::showImage(const Mat& tempImage) {
 	imshow("Static image", tempImage);
 }
+
 void ImageClass::filtrImage() {
 	Filter medianFilter(this->image);
 	image = medianFilter.filtrMedian();
@@ -163,4 +165,12 @@ void ImageClass::skeletozation() {
 void ImageClass::findMinutiae() {
 	Minutiae minutiae(this->image, this->fingerMask);
 	minutiae.findMinutiae();
+	this->endPointsVector = minutiae.getEndPointsVector();
+	this->branchPointsVector = minutiae.getBranchPointsVector();
+}
+
+void ImageClass::methodI() {
+	Method* methodI = new MethodI(this->image, this->filepath);
+	methodI->writeToFile(this->endPointsVector, this->branchPointsVector);
+	delete methodI;
 }
