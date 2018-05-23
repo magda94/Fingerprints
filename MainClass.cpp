@@ -8,7 +8,7 @@ using namespace cv;
 
 int main(int, char**)
 {
-	std::string filepath = "FingerDatabase/p01/k01.bmp";
+	std::string filepath = "FingerDatabase/p01/w01.bmp";
 
 	Mat img = imread(filepath, CV_LOAD_IMAGE_GRAYSCALE);
 	//Mat img = imread("FingerDatabase/lena.png", CV_LOAD_IMAGE_GRAYSCALE);
@@ -17,8 +17,8 @@ int main(int, char**)
 	std::cout << "Create ImageClass\n\n";
 	ImageClass imageClass = ImageClass(img, filepath);
 	imageClass.showImage();
+	//imageClass.normalizeImage();
 	imageClass.filtrImage();
-	imageClass.normalizeImage();
 	imageClass.binaryImage();
 	imageClass.smoothImage();
 	imageClass.createMask();

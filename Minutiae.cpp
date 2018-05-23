@@ -39,7 +39,6 @@ bool Minutiae::checkIfBrach(int x, int y) {
 bool Minutiae::checkIfInEdges(Point2i point) {
 	int x = point.x;
 	int y = point.y;
-	//std::cout << "LEFT: " << fingerEdge[x][0] << " RIGHT: " << fingerEdge[x][1] << std::endl;
 	if (this->fingerEdge[x][0] < y && this->fingerEdge[x][1] > y) {
 		return true;
 	}
@@ -110,6 +109,123 @@ vector<Point2i> Minutiae::reduceMinutiaes(const vector<Point2i> pointsVector) {
 	return newPointsVector;
 }
 
+vector<Point2i> Minutiae::findTrueEnds(const vector<Point2i> endPointsVector) {
+	vector<Point2i> newPointsVector;
+	
+	for (int i = 0; i < endPointsVector.size(); i++) {
+		bool flag = this->checkIfTrueEnd(endPointsVector.at(i).x, endPointsVector.at(i).y);
+		if (flag) {
+			//std::cout << "TRUE" << std::endl;
+			newPointsVector.push_back(endPointsVector.at(i));
+		}
+	}
+	
+	return newPointsVector;
+}
+
+bool Minutiae::checkIfTrueEnd(int x, int y) {
+	int windowSize = 25;
+	bool flag = false;
+	//allocate
+	int** windowTab = new int*[windowSize];
+	for (int i = 0; i < windowSize; i++) {
+		windowTab[i] = new int[windowSize];
+	}
+	//initialize
+	for (int i = 0; i < windowSize; i++) {
+		for (int j = 0; j < windowSize; j++) {
+			windowTab[i][j] = 0;
+		}
+	}
+
+	int center = (windowSize - 1) / 2;
+	windowTab[center][center] = -1;
+
+	this->checkNeighborhoodInWindow(x, y, center, center, windowSize, windowTab);
+
+	flag = this->checkEndWindowTable(windowSize, windowTab);
+
+	//print table
+	/*std::cout << "\n\n\nNEW TABLE" << std::endl;
+	for (int i = 0; i < windowSize; i++) {
+		for (int j = 0; j < windowSize; j++) {
+			std::cout << windowTab[i][j] << "\t";
+		}
+		std::cout << std::endl;
+	}*/
+
+	//delocate
+	for (int i = 0; i < windowSize; i++) {
+		delete windowTab[i];
+	}
+	delete windowTab;
+	return flag;
+}
+
+bool Minutiae::checkEndWindowTable(int windowSize, int** windowTable) {
+	bool flag = false;
+
+	int counter = 0;
+
+
+	//up and bottom
+	for (int j = 0; j < windowSize; j++) {
+		if (windowTable[0][j] == 1) {
+			counter++;
+		}
+		if (windowTable[windowSize - 1][j] == 1) {
+			counter++;
+		}
+	}
+
+	//left and right
+	for (int i = 0; i < windowSize; i++) {
+		if (windowTable[i][0] == 1) {
+			counter++;
+		}
+		if (windowTable[i][windowSize - 1] == 1) {
+			counter++;
+		}
+	}
+
+	/*std::cout << "\n\n\nNEW TABLE" << std::endl;
+	for (int i = 0; i < windowSize; i++) {
+		for (int j = 0; j < windowSize; j++) {
+			std::cout << windowTable[i][j] << "\t";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "COUNTER:" << counter << std::endl;*/
+	if (counter == 1)
+		flag = true;
+
+	return flag;
+}
+
+void Minutiae::checkNeighborhoodInWindow(int orgX, int orgY, int x, int y, int windowSize, int** windowTab) {
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			if (i == 0 && j == 0) {
+				continue;
+			}
+			if (orgX < 0 || orgX >= this->image.rows || orgY < 0 || orgY >= this->image.cols) {
+				continue;
+			}
+			if (x + i == windowSize || y + j == windowSize || x + i < 0 || y + j < 0) {
+				continue;
+			}
+			if ((int)this->image.at<uchar>(orgX + i, orgY + j) == 0 && windowTab[x+i][y+j] == 0) {
+				int newOrgX = orgX + i;
+				int newOrgY = orgY + j;
+				windowTab[x + i][y + j] = 1;
+				//std::cout << "IN" << std::endl;
+				if(x+i < windowSize || y+j < windowSize || x+i >= 0 || y+j >= 0)
+					checkNeighborhoodInWindow(newOrgX, newOrgY, x+i, y+j, windowSize, windowTab);
+			}
+		}
+	}
+}
+
 void Minutiae::printMinutiae(const vector<Point2i> endPointsVector, const vector<Point2i> branchPointsVector) {
 	Mat temp;
 	temp = this->image.clone();
@@ -121,11 +237,11 @@ void Minutiae::printMinutiae(const vector<Point2i> endPointsVector, const vector
 		circle(temp, Point(y, x), 5, Scalar(0, 0, 255));//BGR
 	}
 
-	for (int i = 0; i < branchPointsVector.size(); i++) {
+	/*for (int i = 0; i < branchPointsVector.size(); i++) {
 		int x = branchPointsVector[i].x;
 		int y = branchPointsVector[i].y;
 		circle(temp, Point(y, x), 5, Scalar(255, 0, 0));
-	}
+	}*/
 
 	imshow("TEMP", temp);
 }
@@ -182,8 +298,10 @@ void Minutiae::findMinutiae() {
 	std::cout << "ENDS SIZE: " << endPointsVector.size()<<std::endl;
 	std::cout << "BRANCH SIZE: " << branchPointsVector.size() << std::endl;
 
-	endPointsVector = this->roundPoints(endPointsVector);
-	branchPointsVector = this->roundPoints(branchPointsVector);
+	//endPointsVector = this->roundPoints(endPointsVector);
+	//branchPointsVector = this->roundPoints(branchPointsVector);
+
+	endPointsVector = this->findTrueEnds(endPointsVector);
 
 	std::cout << "ENDS SIZE: " << endPointsVector.size() << std::endl;
 	std::cout << "BRANCH SIZE: " << branchPointsVector.size() << std::endl;

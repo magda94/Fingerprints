@@ -138,8 +138,11 @@ void ImageClass::binaryImage() {
 	double threshold = this->calculateThreshold(histogramTab, MinAndMax);
 	std::cout << "THRESHOLD: " << threshold;
 
-	//cv::threshold(this->image, this->image, threshold/3, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
-	cv::threshold(this->image, this->image, threshold/5, 255, CV_THRESH_BINARY_INV);
+	Mat temp;
+	cv::threshold(this->image, this->image, 5, 255, CV_THRESH_BINARY_INV );
+	//cv::threshold(this->image, this->image, threshold / 3, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+	//cv::threshold(this->image, this->image, threshold/5, 255, CV_THRESH_BINARY_INV);
+	//imshow("BINARY TEMP" , temp);
 	imshow("BINARY", this->image);
 	delete[] histogramTab;
 }

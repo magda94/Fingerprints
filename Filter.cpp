@@ -71,6 +71,52 @@ void Filter::addNeighbours(int x, int y) {
 	}
 }
 
+double Filter::getMean()
+{
+	double mean = 0.0;
+
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			mean += (int)this->image.at<uchar>(i, j);
+		}
+	}
+
+	mean = mean / (this->image.rows * this->image.cols);
+
+	return mean;
+}
+
+double Filter::getVariance(double mean)
+{
+	double variance = 0.0;
+
+	std::cout << "VALUE image: " << (double)this->image.at<uchar>(1, 0) << std::endl;
+
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			variance += pow((double)this->image.at<uchar>(i, j) - mean, 2);
+		}
+	}
+
+	variance = variance / (this->image.rows * this->image.cols);
+
+	return variance;
+}
+
+double Filter::getValueNormalized(int imageValue, double mean, double mean0, double variance, double variance0)
+{
+	double newValue = 0.0;
+
+	if (imageValue > mean) {
+		newValue = mean0 + sqrt((variance0 * pow(imageValue-mean,2))/variance);
+	}
+	else {
+		newValue = mean0 - sqrt((variance0 * pow(imageValue - mean, 2)) / variance);
+	}
+
+	return newValue;
+}
+
 Mat Filter::chooseBiggest(Mat fingerMask) {
 	Mat newFingerMask;
 	vector<Point2i> biggest;
@@ -155,10 +201,33 @@ Mat Filter::reduceHoles() {
 	morphologyEx(this->image,temp, operation, element);
 	this->image = temp;
 
+	imshow("REDUCE HOLES",this->image);
 	return this->image;
 }
 
-Mat Filter::normalize() {
+Mat Filter::normalize()
+{
+	double mean = this->getMean();
+	double variance = this->getVariance(mean);
+
+	double mean0 = mean;
+	double variance0 =  variance;
+
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			this->image.at<uchar>(i,j) = this->getValueNormalized((int)this->image.at<uchar>(i, j), mean, mean0, variance, variance0);
+		}
+	}
+
+
+	std::cout << "MEAN: " << mean << std::endl;
+	std::cout << "VARIANCE: " << variance << std::endl;
+
+	imshow("FUNCTION NORMALIZED IMAGE",this->image);
+	return this->image;
+}
+
+Mat Filter::normalize2() {
 	int max = (int)this->image.at<uchar>(0, 0);
 	int min = (int)this->image.at<uchar>(0, 0);
 

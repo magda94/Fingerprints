@@ -3,6 +3,7 @@
 
 #include "opencv2/opencv.hpp"
 #include <vector>
+#include <cmath>
 
 using namespace cv;
 using namespace std;
@@ -17,11 +18,15 @@ private:
 	bool checkNumberOfBlack(Mat image, int x, int y);
 	Mat chooseBiggest(Mat image);
 	void addNeighbours(int x, int y);
+	double getMean();
+	double getVariance(double mean);
+	double getValueNormalized(int imageValue, double mean, double mean0, double variance, double variance0);
 public:
 	Filter(const Mat& image);
 	Mat filtrMedian();
 	Mat reduceHoles();
 	Mat normalize();
+	Mat normalize2();//filter with histogram 
 	Mat createMask();
 };
 
