@@ -53,7 +53,7 @@ vector<Point2i> Minutiae::roundPoints(const vector<Point2i> pointsVector) {
 		for (int j = 0; j < newPointsVector.size(); j++) {
 			Point2i tempPoint = newPointsVector[j];
 			double distance = sqrt(pow(searchPoint.x - tempPoint.x,2) + pow(searchPoint.y - tempPoint.y,2));
-			if (distance < 15) {
+			if (distance < 7) {
 				flag = true;
 			}
 		}
@@ -123,8 +123,20 @@ vector<Point2i> Minutiae::findTrueEnds(const vector<Point2i> endPointsVector) {
 	return newPointsVector;
 }
 
+vector<Point2i> Minutiae::reduceHolesEndings(const vector<Point2i> endPointsVector)
+{
+	vector<Point2i> newPointsVector;
+	for (int i = 0; i < endPointsVector.size(); i++) {
+		bool flag = this->checkIfHole(endPointsVector.at(i).x, endPointsVector.at(i).y);
+		if (flag) {
+			newPointsVector.push_back(endPointsVector.at(i));
+		}
+	}
+	return newPointsVector;
+}
+
 bool Minutiae::checkIfTrueEnd(int x, int y) {
-	int windowSize = 25;
+	int windowSize = 21;
 	bool flag = false;
 	//allocate
 	int** windowTab = new int*[windowSize];
@@ -199,6 +211,63 @@ bool Minutiae::checkEndWindowTable(int windowSize, int** windowTable) {
 	if (counter == 1)
 		flag = true;
 
+	return flag;
+}
+
+bool Minutiae::checkIfHole(int x, int y)
+{
+	bool flag = true;
+	int windowSize = 1;
+	Point2i linePlace;
+	Point2i oppositePlace;
+	
+	//search where is line
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			if (i == 0 && j == 0)
+				continue;
+			if ((int)this->image.at<uchar>(x + i, y + j) == 0) {
+				linePlace.x = x + i;
+				linePlace.y = y + j;
+			}
+		}
+	}
+
+	//set opopsite
+	if (linePlace.x < x) {
+		oppositePlace.x = x + 1;
+	}
+	else if (linePlace.x > x) {
+		oppositePlace.x = x - 1;
+	}
+	else {
+		oppositePlace.x = x;
+	}
+
+	if (linePlace.y < y) {
+		oppositePlace.y = y + 1;
+	}
+	else if (linePlace.y > y) {
+		oppositePlace.y = y - 1;
+	}
+	else {
+		oppositePlace.y = y;
+	}
+
+	//std::cout << "LINEPLACE: " << linePlace << std::endl;
+	//std::cout << "OPPOSITEPLACE:" << oppositePlace << std::endl;
+	//check if is black pixel
+	for (int i = -windowSize; i <= windowSize; i++) {
+		for (int j = -windowSize; j <= windowSize; j++) {
+			if (oppositePlace.x+i== linePlace.x && oppositePlace.y+j == linePlace.y)
+				continue;
+			if (oppositePlace.x+i == x && oppositePlace.y+j == y)
+				continue;
+			if ((int)this->image.at<uchar>(oppositePlace.x + i, oppositePlace.y + j) == 0) {
+				flag = false;
+			}
+		}
+	}
 	return flag;
 }
 
@@ -298,8 +367,9 @@ void Minutiae::findMinutiae() {
 	std::cout << "ENDS SIZE: " << endPointsVector.size()<<std::endl;
 	std::cout << "BRANCH SIZE: " << branchPointsVector.size() << std::endl;
 
-	//endPointsVector = this->roundPoints(endPointsVector);
 	//branchPointsVector = this->roundPoints(branchPointsVector);
+
+	endPointsVector = this->reduceHolesEndings(endPointsVector);
 
 	endPointsVector = this->findTrueEnds(endPointsVector);
 
@@ -310,6 +380,8 @@ void Minutiae::findMinutiae() {
 
 	endPointsVector = this->reduceMinutiaes(endPointsVector);
 	branchPointsVector = this->reduceMinutiaes(branchPointsVector);
+
+	endPointsVector = this->roundPoints(endPointsVector);
 
 	std::cout << "ENDS SIZE: " << endPointsVector.size() << std::endl;
 	std::cout << "BRANCH SIZE: " << branchPointsVector.size() << std::endl;
