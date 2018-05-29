@@ -10,6 +10,7 @@
 #include "Filter.h"
 #include "Minutiae.h"
 #include "MethodI.h"
+#include "Classification.h"
 
 using namespace cv;
 
@@ -40,6 +41,7 @@ public:
 	void skeletozation();
 	void findMinutiae();
 	void methodI();
+	void clasifyMethodI();
 };
 
 #endif

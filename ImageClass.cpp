@@ -177,3 +177,8 @@ void ImageClass::methodI() {
 	methodI->writeToFile(this->endPointsVector, this->branchPointsVector);
 	delete methodI;
 }
+
+void ImageClass::clasifyMethodI() {
+	Classification classification(this->filepath);
+	classification.getClassification();
+}

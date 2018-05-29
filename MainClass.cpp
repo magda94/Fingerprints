@@ -25,6 +25,7 @@ int main(int, char**)
 	imageClass.skeletozation();
 	imageClass.findMinutiae();
 	imageClass.methodI();
+	imageClass.clasifyMethodI();
 
 	imageClass.showImage();
 
