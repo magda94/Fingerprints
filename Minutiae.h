@@ -23,11 +23,17 @@ private:
 	void findEdges();
 	vector<Point2i> reduceMinutiaes(const vector<Point2i> pointsVector);
 	vector<Point2i> findTrueEnds(const vector<Point2i> endPointsVector);
+	vector<Point2i> findTrueBranches(const vector<Point2i> branchPointsVector);
 	vector<Point2i> reduceHolesEndings(const vector<Point2i> endPointsVector);
 	bool checkIfTrueEnd(int x, int y);
+	bool checkIfTrueBranch(int x, int y);
 	void checkNeighborhoodInWindow(int orgX, int orgY, int x, int y, int windowSize, int** windowTab);
+	void checkBranchNeighborhoodInWindow(int orgX, int orgY, int x, int y, int direction, int windowSize, int** windowTab, int type);
 	bool checkEndWindowTable(int winodwSize, int** windowTable);
+	bool checkBranchWindowTable(int windowSize, int** windowTable);
 	bool checkIfHole(int x, int y);
+	bool checkIfBlackWithDirection(int x, int y, int toCheckX, int toCheckY, int direction);
+	int checkDirection(int centerX, int centerY, int x, int y);
 	void printMinutiae(const vector<Point2i> endPointsVector, const vector<Point2i> branchPointsVector);
 	void setEndPointsVector(vector<Point2i> endPointsVector);
 	void setBranchPointsVector(vector<Point2i> branchPointsVector);

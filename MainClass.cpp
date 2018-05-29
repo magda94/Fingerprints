@@ -8,7 +8,7 @@ using namespace cv;
 
 int main(int, char**)
 {
-	std::string filepath = "FingerDatabase/p01/w01.bmp";
+	std::string filepath = "FingerDatabase/p01/k01.bmp";
 
 	Mat img = imread(filepath, CV_LOAD_IMAGE_GRAYSCALE);
 	//Mat img = imread("FingerDatabase/lena.png", CV_LOAD_IMAGE_GRAYSCALE);
