@@ -14,13 +14,16 @@ using namespace std;
 
 class Classification {
 private:
-	int patternCount = 11;
+	int patternCount = 10;
 	string filename;
 	string fingerName;
 	string rootPath;
 	string filepath;
 	vector<MinutiaeInformation> sample;
 	vector<double> compareResults;
+	int numberOfGroup;
+
+	int check;
 
 	std::string getFilename();
 	std::string getRootFolder();
@@ -28,7 +31,9 @@ private:
 	void getSampleInformation();
 	void compareToOther();
 	double compareToFinger(const vector<MinutiaeInformation> otherFinger);
+	double findTheLowest(vector<MinutiaeInformation> otherFinger, MinutiaeInformation minutiae);
 	void searchPatterns();
+	void findTrueGroup();
 
 	void showResult();
 public:

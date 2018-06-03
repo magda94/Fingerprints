@@ -9,8 +9,8 @@ private:
 
 public:
 	MinutiaeInformation(int x, int y, int type);
-	int getX();
-	int getY();
+	const int getX();
+	const int getY();
 	int getType();
 };
 #endif

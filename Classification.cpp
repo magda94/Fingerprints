@@ -67,7 +67,7 @@ void Classification::compareToOther() {
 			otherName = this->rootPath.substr(0, this->rootPath.length() - 1) + intStream.str();
 		}
 
-		otherName += "/" + this->fingerName + ".txt";
+		otherName += "/" + this->fingerName.substr(0,1) + "01.txt";
 		
 		otherFile.open(otherName);
 
@@ -83,10 +83,48 @@ void Classification::compareToOther() {
 	}
 }
 
-double Classification::compareToFinger(const vector<MinutiaeInformation> otherFinger) {
+double Classification::compareToFinger(vector<MinutiaeInformation> otherFinger) {
 	double result = 0.0;
 
+	for (int i = 0; i < this->sample.size(); i++) {
+		result += this->findTheLowest(otherFinger, this->sample.at(i));
+	}
+
 	return result;
+}
+
+double Classification::findTheLowest(vector<MinutiaeInformation> otherFinger, MinutiaeInformation minutiae)
+{
+	double result = std::numeric_limits<double>::max();
+
+	for (int i = 0; i < otherFinger.size(); i++) {
+		if (otherFinger.at(i).getType() == minutiae.getType()) {
+			double tempX = pow(otherFinger.at(i).getX() - minutiae.getX(), 2);
+			double tempY = pow(otherFinger.at(i).getX() - minutiae.getX(), 2);
+
+			double temp = sqrt(tempX + tempY);
+
+			if (temp < result) {
+				result = temp;
+			}
+		}
+	}
+
+	return result;
+}
+
+void Classification::findTrueGroup()
+{
+	double value = this->compareResults.at(0);
+	int group = 1;
+	for (int i = 1; i < this->compareResults.size(); i++) {
+		if (value > this->compareResults.at(i)) {
+			value = this->compareResults.at(i);
+			group = i + 1;
+		}
+	}
+
+	this->numberOfGroup = group;
 }
 
 void Classification::showResult() {
@@ -99,6 +137,8 @@ void Classification::showResult() {
 	for (int i = 0; i < this->compareResults.size(); i++) {
 		std::cout << "FINGER " << i + 1 << ": " << this->compareResults.at(i) << std::endl;
 	}
+
+	std::cout << "THIS IS PERSON " << this->numberOfGroup << std::endl;
 }
 
 /*******************************************
@@ -115,6 +155,7 @@ void Classification::getClassification() {
 	
 	this->getSampleInformation();
 	this->compareToOther();
+	this->findTrueGroup();
 
 	this->showResult();
 }

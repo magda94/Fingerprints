@@ -6,11 +6,11 @@ MinutiaeInformation::MinutiaeInformation(int x, int y, int type) {
 	this->type = type;
 }
 
-int MinutiaeInformation::getX() {
+const int MinutiaeInformation::getX() {
 	return this->x;
 }
 
-int MinutiaeInformation::getY() {
+const int MinutiaeInformation::getY() {
 	return this->y;
 }
 
