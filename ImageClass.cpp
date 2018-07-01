@@ -168,7 +168,7 @@ void ImageClass::skeletozation() {
 }
 
 void ImageClass::coreDetection(){
-	CoreDetection coreDetection(this->orgImage);
+	CoreDetection coreDetection(this->image);
 	coreDetection.detectCore();
 }
 

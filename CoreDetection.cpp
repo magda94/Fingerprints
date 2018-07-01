@@ -96,6 +96,30 @@ void CoreDetection::multiplyMatrix(double ** in1, double ** in2, double ** out, 
 
 }
 
+void CoreDetection::filtrGaussian(double ** in, double ** out, int start_rows, int start_cols){
+	int height = this->image.rows / h_divide;
+	int width = this->image.cols / w_divide;
+
+	Mat A = Mat(height, width, CV_32FC1);
+	
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			A.at<float>(i, j) = in[start_rows + i][start_cols + j];
+		}
+	}
+
+	Mat result;
+
+
+	cv::GaussianBlur(A, result, Size(3,3), 0.5);
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			out[start_rows + i][start_cols + j] = result.at<float>(i, j);
+		}
+	}
+}
+
 void CoreDetection::writeGradient(double ** in, std::string name)
 {
 	std::ofstream file;
@@ -154,12 +178,21 @@ void CoreDetection::detectCore(){
 
 	int blockSize = this->image.rows / this->h_divide;
 	
-	//for each block
+	//for each block, count Gradients
 	for (int i = 0; i < h_divide; i++) {
 		for (int j = 0; j < w_divide; j++) {
 			this->multiplyMatrix(this->gradientX, this->gradientX, this->gradientXX, blockSize*i, blockSize*j);//gradientXX
 			this->multiplyMatrix(this->gradientX, this->gradientY, this->gradientXY, blockSize*i, blockSize*j);//gradientXY
 			this->multiplyMatrix(this->gradientY, this->gradientY, this->gradientYY, blockSize*i, blockSize*j);//gradientYY
+		}
+	}
+
+	//for each block, filter gradients
+	for (int i = 0; i < h_divide; i++) {
+		for (int j = 0; j < w_divide; j++) {
+			this->filtrGaussian(this->gradientXX, this->gradientXX, blockSize*i, blockSize*j);//gradientXX
+			this->filtrGaussian(this->gradientXY, this->gradientXY, blockSize*i, blockSize*j);//gradientXY
+			this->filtrGaussian(this->gradientYY, this->gradientYY, blockSize*i, blockSize*j);//gradientYY
 		}
 	}
 

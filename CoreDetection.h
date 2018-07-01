@@ -27,6 +27,7 @@ private:
 	void countGradientX();
 	void countGradientY();
 	void multiplyMatrix(double** in1, double** in2, double** out, int start_rows, int start_cols);
+	void filtrGaussian(double** in, double** out, int start_rows, int start_cols);
 
 	void writeGradient(double** in, std::string name);
 
