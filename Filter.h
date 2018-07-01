@@ -21,6 +21,7 @@ private:
 	double getMean();
 	double getVariance(double mean);
 	double getValueNormalized(int imageValue, double mean, double mean0, double variance, double variance0);
+	Mat centerMask(Mat image);
 public:
 	Filter(const Mat& image);
 	Mat filtrMedian();
@@ -28,6 +29,7 @@ public:
 	Mat normalize();
 	Mat normalize2();//filter with histogram 
 	Mat createMask();
+	Mat getImage();
 };
 
 #endif

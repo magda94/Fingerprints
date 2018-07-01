@@ -117,6 +117,157 @@ double Filter::getValueNormalized(int imageValue, double mean, double mean0, dou
 	return newValue;
 }
 
+Mat Filter::centerMask(Mat image)
+{
+	int height_beg, height_end, width_beg, width_end;
+
+	bool flag = false;
+
+	//height_beggining
+	for (int i = 0; i < image.rows; i++) {
+		for (int j = 0; j < image.cols; j++) {
+			if ((int)image.at<uchar>(i, j) == 0) {
+				height_beg = i;
+				flag = true;
+				break;
+			}
+		}
+		if (flag == true) {
+			break;
+		}
+	}
+
+	//height_end
+	flag = false;
+	for (int i = image.rows - 1; i >= 0; i--) {
+		for (int j = 0; j < image.cols; j++) {
+			if ((int)image.at<uchar>(i, j) == 0) {
+				height_end = i;
+				flag = true;
+				break;
+			}
+		}
+		if (flag == true) {
+			break;
+		}
+	}
+
+	//width_beggining
+	flag = false;
+	for (int j = 0; j < image.cols; j++) {
+		for (int i = 0; j < image.rows; i++) {
+			if ((int)image.at<uchar>(i, j) == 0) {
+				width_beg = j;
+				flag = true;
+				break;
+			}
+		}
+		if (flag == true) {
+			break;
+		}
+	}
+
+	//width_end
+	flag = false;
+	for (int j = image.cols - 1; j >= 0; j--) {
+		for (int i = 0; j < image.rows; i++) {
+			if ((int)image.at<uchar>(i, j) == 0) {
+				width_end = j;
+				flag = true;
+				break;
+			}
+		}
+		if (flag == true) {
+			break;
+		}
+	}
+
+	std::cout << "H_B: " << height_beg << "\tH_E: " << height_end << "\tW_B: " << width_beg << "\tW_E: " << width_end << std::endl;
+
+	int avg_height = floor((height_beg + height_end)/2);
+	int avg_width = floor((width_beg + width_end)/2);
+
+	std::cout << " AVG_H: " << avg_height << "\tAVG_W: " << avg_width << std::endl;
+
+	int avg_height_image = floor(image.rows/2);
+	int avg_width_image = floor(image.cols/2);
+
+	std::cout << " AVG_H_I: " << avg_height_image << "\tAVG_W_I: " << avg_width_image << std::endl;
+
+	Mat temp_image(image.size(), image.type());
+	Mat temp_image_this(this->image.size(), this->image.type());
+
+	for (int i = 0; i < image.rows; i++) {
+		for (int j = 0; j < image.cols; j++) {
+			temp_image.at<uchar>(i, j) = 255;
+			temp_image_this.at<uchar>(i, j) = 255;
+		}
+	}
+
+	//I
+	for (int i = 0; i <= avg_height; i++) {
+		for (int j = 0; j <= avg_width; j++) {
+			if (avg_height_image > i && avg_width_image > j) {
+				temp_image.at<uchar>(avg_height_image - i, avg_width_image - j) = image.at<uchar>(avg_height - i, avg_width - j);
+				temp_image_this.at<uchar>(avg_height_image - i, avg_width_image - j) = this->image.at<uchar>(avg_height - i, avg_width - j);
+			}
+		}
+	}
+
+	/*cvtColor(temp_image, temp_image, CV_GRAY2BGR);
+	circle(temp_image, Point(avg_width_image, avg_height_image), 5, Scalar(255, 0, 0));
+	circle(temp_image, Point(avg_width, avg_height), 5, Scalar(0, 0, 255));*/
+
+	//II
+	for (int i = 0; i <= avg_height; i++) {
+		for (int j = 0; j <= avg_width; j++) {
+			if (avg_height_image > i && avg_width_image > j) {
+				temp_image.at<uchar>(avg_height_image - i, avg_width_image + j) = image.at<uchar>(avg_height - i, avg_width + j);
+				temp_image_this.at<uchar>(avg_height_image - i, avg_width_image + j) = this->image.at<uchar>(avg_height - i, avg_width + j);
+			}
+		}
+	}
+
+	//III
+	for (int i = 0; i <= avg_height; i++) {
+		for (int j = 0; j <= avg_width; j++) {
+			if (avg_height_image > i && avg_width_image > j) {
+				temp_image.at<uchar>(avg_height_image + i, avg_width_image + j) = image.at<uchar>(avg_height + i, avg_width + j);
+				temp_image_this.at<uchar>(avg_height_image + i, avg_width_image + j) = this->image.at<uchar>(avg_height + i, avg_width + j);
+			}
+		}
+	}
+
+	//IV
+	for (int i = 0; i <= avg_height; i++) {
+		for (int j = 0; j <= avg_width; j++) {
+			if (avg_height_image > i && avg_width_image > j) {
+				temp_image.at<uchar>(avg_height_image + i, avg_width_image - j) = image.at<uchar>(avg_height + i, avg_width - j);
+				temp_image_this.at<uchar>(avg_height_image + i, avg_width_image - j) = this->image.at<uchar>(avg_height + i, avg_width - j);
+			}
+		}
+	}
+
+
+	//border
+	for (int i = 0; i < image.rows; i++) {
+		temp_image.at<uchar>(i, 0) = (uchar)255;
+		temp_image.at<uchar>(i, image.cols-1) = (uchar)255;
+	}
+
+	for (int j = 0; j < image.cols; j++) {
+		temp_image.at<uchar>(0, j) = (uchar)255;
+		temp_image.at<uchar>(image.rows-1, j) = (uchar)255;
+	}
+
+	this->image = temp_image_this.clone();
+
+	//imshow("TEMP_MASK_IMAGE", temp_image_this);
+
+	return temp_image;
+	//return image;
+}
+
 Mat Filter::chooseBiggest(Mat fingerMask) {
 	Mat newFingerMask;
 	vector<Point2i> biggest;
@@ -201,7 +352,7 @@ Mat Filter::reduceHoles() {
 	morphologyEx(this->image,temp, operation, element);
 	this->image = temp;
 
-	imshow("REDUCE HOLES",this->image);
+	//imshow("REDUCE HOLES",this->image);
 	return this->image;
 }
 
@@ -223,7 +374,7 @@ Mat Filter::normalize()
 	std::cout << "MEAN: " << mean << std::endl;
 	std::cout << "VARIANCE: " << variance << std::endl;
 
-	imshow("FUNCTION NORMALIZED IMAGE",this->image);
+	//imshow("FUNCTION NORMALIZED IMAGE",this->image);
 	return this->image;
 }
 
@@ -279,8 +430,14 @@ Mat Filter::createMask() {
 		fingerMask.copyTo(temp);
 		n++;
 	}
-	imshow("ORG FINGERMASK", fingerMask);
+	//imshow("ORG FINGERMASK", fingerMask);
 	fingerMask = this->chooseBiggest(fingerMask);
-	imshow("FINGER MASK", fingerMask);
+	//fingerMask = this->centerMask(fingerMask);
+	//imshow("FINGER MASK", fingerMask);
 	return fingerMask;
+}
+
+Mat Filter::getImage()
+{
+	return this->image;
 }

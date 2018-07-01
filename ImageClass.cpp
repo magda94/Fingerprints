@@ -98,6 +98,7 @@ PUBLIC METHODS
 *******************************************/
 ImageClass::ImageClass(const Mat& image, std::string filepath) {
 	this->image = image;
+	this->orgImage = image.clone();
 	this->filepath = filepath;
 }
 
@@ -143,7 +144,7 @@ void ImageClass::binaryImage() {
 	//cv::threshold(this->image, this->image, threshold / 3, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 	//cv::threshold(this->image, this->image, threshold/5, 255, CV_THRESH_BINARY_INV);
 	//imshow("BINARY TEMP" , temp);
-	imshow("BINARY", this->image);
+	//imshow("BINARY", this->image);
 	delete[] histogramTab;
 }
 
@@ -156,6 +157,7 @@ void ImageClass::smoothImage() {
 void ImageClass::createMask() {
 	Filter filter(this->image);
 	Mat temp = filter.createMask();
+	//this->image = filter.getImage();
 	this->fingerMask = temp;
 }
 
@@ -163,6 +165,11 @@ void ImageClass::skeletozation() {
 	Skeleton skeleton(this->image);
 	Mat temp = skeleton.makeSkeleton();
 	this->image = temp;
+}
+
+void ImageClass::coreDetection(){
+	CoreDetection coreDetection(this->orgImage);
+	coreDetection.detectCore();
 }
 
 void ImageClass::findMinutiae() {

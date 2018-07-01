@@ -11,12 +11,14 @@
 #include "Minutiae.h"
 #include "MethodI.h"
 #include "Classification.h"
+#include "CoreDetection.h"
 
 using namespace cv;
 
 class ImageClass {
 private:
 	Mat image;
+	Mat orgImage;
 	Mat fingerMask;
 	std::string filepath;
 	vector<Point2i> endPointsVector;
@@ -39,6 +41,7 @@ public:
 	void smoothImage();
 	void createMask();
 	void skeletozation();
+	void coreDetection();
 	void findMinutiae();
 	void methodI();
 	void clasifyMethodI();
