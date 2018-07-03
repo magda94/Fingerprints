@@ -26,8 +26,20 @@ private:
 	double countDeviation();
 	void countGradientX();
 	void countGradientY();
+
+	void addMatrix(double** in1, double** in2, double** out, int start_rows, int start_cols);
+	void subtractMatrix(double** in1, double** in2, double** out, int start_rows, int start_cols);
 	void multiplyMatrix(double** in1, double** in2, double** out, int start_rows, int start_cols);
+	void divideMatrix(double** in1, double** in2, double** out, int start_rows, int start_cols);
+	void powMatrix(double** in, double** out, int number, int start_rows, int start_cols);
+	void sqrtMatrix(double** in,double** out, int start_rows, int start_cols);
+
+
 	void filtrGaussian(double** in, double** out, int start_rows, int start_cols);
+	void countSineComponent(int start_rows, int start_cols);
+	void countCosineComponent(int start_rows, int start_cols);
+	
+	void countFieldOrientation();
 
 	void writeGradient(double** in, std::string name);
 
