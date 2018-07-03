@@ -36,7 +36,7 @@ private:
 
 
 	void filtrGaussian(double** in, double** out, int start_rows, int start_cols);
-	void countSineComponent(int start_rows, int start_cols);
+	void countSineComponent(int blockSize);
 	void countCosineComponent(int start_rows, int start_cols);
 	
 	void countFieldOrientation();
