@@ -1,0 +1,4 @@
+*.txt
+*.filters
+*.vcxproj*
+x64/
