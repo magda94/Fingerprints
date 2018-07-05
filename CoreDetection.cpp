@@ -144,6 +144,31 @@ void CoreDetection::multiplyMatrix(double ** in1, double ** in2, double ** out, 
 
 }
 
+void CoreDetection::divideMatrix(double ** in1, double ** in2, double ** out, int start_rows, int start_cols){
+	int height = this->image.rows / h_divide;
+	int width = this->image.cols / w_divide;
+
+	Mat A = Mat(height, width, CV_32FC1);
+	Mat B = Mat(height, width, CV_32FC1);
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			A.at<float>(i, j) = in1[i + start_rows][j + start_cols];
+			B.at<float>(i, j) = in2[i + start_rows][j + start_cols];
+		}
+	}
+
+	Mat result;
+
+	cv::divide(A, B, result);
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			out[start_rows + i][start_cols + j] = result.at<float>(i, j);
+		}
+	}
+}
+
 void CoreDetection::powMatrix(double ** in, double ** out, int number, int start_rows, int start_cols) {
 	int height = this->image.rows / h_divide;
 	int width = this->image.cols / w_divide;
@@ -159,6 +184,29 @@ void CoreDetection::powMatrix(double ** in, double ** out, int number, int start
 	Mat result;
 
 	cv::pow(A, number, result);
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			out[start_rows + i][start_cols + j] = result.at<float>(i, j);
+		}
+	}
+}
+
+void CoreDetection::sqrtMatrix(double ** in, double ** out, int start_rows, int start_cols){
+	int height = this->image.rows / h_divide;
+	int width = this->image.cols / w_divide;
+
+	Mat A = Mat(height, width, CV_32FC1);
+
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			A.at<float>(i, j) = in[start_rows + i][start_cols + j];
+		}
+	}
+
+	Mat result;
+
+	cv::sqrt(A, result);
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
@@ -196,31 +244,35 @@ void CoreDetection::countSineComponent(int blockSize) {
 	double** resultMatrix = new double*[this->image.rows];
 	double** gradientXYPow = new double*[this->image.rows];
 	double** addResult = new double*[this->image.rows];
+	double** sqrtResult = new double*[this->image.rows];
 
 	for (int i = 0; i < this->image.rows; i++) {
 		resultMatrix[i] = new double[this->image.cols];
 		gradientXYPow[i] = new double[this->image.cols];
 		addResult[i] = new double[this->image.cols];
+		sqrtResult[i] = new double[this->image.cols];
 	}
 
 	for (int i = 0; i < h_divide; i++) {
 		for (int j = 0; j < w_divide; j++) {
-			std::cout << "\n\nNEW ITERATION\n\n";
+			//std::cout << "\n\nNEW ITERATION\n\n";
 
 			this->subtractMatrix(this->gradientXX, this->gradientYY, resultMatrix, blockSize*i, blockSize*j);
-			
-			//std::cout << "RESULT[10][10]=" << resultMatrix[10 + blockSize*i][10 + blockSize*j] << std::endl;
+		
 
 			this->powMatrix(resultMatrix, resultMatrix, 2, blockSize*i, blockSize*j);
 			this->powMatrix(this->gradientXY, gradientXYPow, 2, blockSize*i, blockSize*j);
 
-			//this->addMatrix(gradientXYPow, resultMatrix, addResult, blockSize*i, blockSize*j);
 			this->addMatrix(gradientXYPow, resultMatrix, addResult, blockSize*i, blockSize*j);
+			this->sqrtMatrix(addResult, sqrtResult, blockSize*i, blockSize*j);
 
-			std::cout << "RESULTMATRIX[10][10]=" << resultMatrix[10 + blockSize * i][10 + blockSize * j] << std::endl;
-			std::cout << "GRADIENTXYPOW[10][10]=" << gradientXYPow[10 + blockSize * i][10 + blockSize * j] << std::endl;
-			std::cout << "RESULT[10][10]=" << addResult[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			this->divideMatrix(this->gradientXY, sqrtResult, this->sineComponent, blockSize*i, blockSize*j);
 
+			/*std::cout << "RESULTMATRIX[10][10]=" << resultMatrix[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			std::cout << "GRADIENTXYPOW[10][10]=" << gradientXYPow[10 + blockSize * i][10 + blockSize * j] << std::endl;*/
+			/*std::cout << "RESULT[10][10]=" << addResult[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			std::cout << "SQRTRESULT[10][10]=" << sqrtResult[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			std::cout << "SINECOMPONENT[10][10]= " << this->sineComponent[10 + blockSize * i][10 + blockSize * j] << std::endl;*/
 		}
 	}
 
@@ -229,11 +281,38 @@ void CoreDetection::countSineComponent(int blockSize) {
 		delete[] resultMatrix[i];
 		delete[] gradientXYPow[i];
 		delete[] addResult[i];
+		delete[] sqrtResult[i];
 	}
 
 	delete[] resultMatrix;
 	delete[] gradientXYPow;
 	delete[] addResult;
+	delete[] sqrtResult;
+}
+
+void CoreDetection::countCosineComponent(int blockSize){
+	//allocate
+	double** substractResult = new double*[this->image.rows];
+
+	for (int i = 0; i < this->image.rows; i++) {
+		substractResult[i] = new double[this->image.cols];
+	}
+
+	for (int i = 0; i < h_divide; i++) {
+		for (int j = 0; j < w_divide; j++) {
+
+			this->subtractMatrix(this->gradientXX, this->gradientYY, substractResult, blockSize*i, blockSize*j);
+
+
+		}
+	}
+
+	//deallocate
+	for (int i = 0; i < this->image.rows; i++) {
+		delete[] substractResult[i];
+	}
+
+	delete[] substractResult;
 }
 
 void CoreDetection::writeGradient(double ** in, std::string name)
@@ -260,12 +339,17 @@ CoreDetection::CoreDetection(const Mat & image){
 	gradientXX = new double*[this->image.rows];
 	gradientXY = new double*[this->image.rows];
 	gradientYY = new double*[this->image.rows];
+	sineComponent = new double*[this->image.rows];
+	cosineComponent = new double*[this->image.rows];
+
 	for (int i = 0; i < this->image.rows; i++) {
 		gradientX[i] = new double[this->image.cols];
 		gradientY[i] = new double[this->image.cols];
 		gradientXY[i] = new double[this->image.cols];
 		gradientXX[i] = new double[this->image.cols];
 		gradientYY[i] = new double[this->image.cols];
+		sineComponent[i] = new double[this->image.cols];
+		cosineComponent[i] = new double[this->image.cols];
 	}
 }
 
@@ -277,6 +361,8 @@ CoreDetection::~CoreDetection(){
 		delete[] gradientXY[i];
 		delete[] gradientYY[i];
 		delete[] gradientXX[i];
+		delete[] sineComponent[i];
+		delete[] cosineComponent[i];
 	}
 
 	delete[] gradientX;
@@ -284,6 +370,8 @@ CoreDetection::~CoreDetection(){
 	delete[] gradientXX;
 	delete[] gradientXY;
 	delete[] gradientYY;
+	delete[] sineComponent;
+	delete[] cosineComponent;
 }
 
 void CoreDetection::detectCore(){
@@ -313,6 +401,7 @@ void CoreDetection::detectCore(){
 	}
 
 	this->countSineComponent(blockSize);
+	this->countCosineComponent(blockSize);
 
 	this->writeGradient(this->gradientX, "gradientX");
 	this->writeGradient(this->gradientY, "gradientY");

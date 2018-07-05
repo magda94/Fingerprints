@@ -22,6 +22,8 @@ private:
 	double** gradientXX;
 	double** gradientXY;
 	double** gradientYY;
+	double** sineComponent;
+	double** cosineComponent;
 	double sigma;
 
 	double countMean();
