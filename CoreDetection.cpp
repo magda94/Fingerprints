@@ -293,9 +293,17 @@ void CoreDetection::countSineComponent(int blockSize) {
 void CoreDetection::countCosineComponent(int blockSize){
 	//allocate
 	double** substractResult = new double*[this->image.rows];
+	double** gradientXYPow = new double*[this->image.rows];
+	double** substractPow = new double*[this->image.rows];
+	double** addResult = new double*[this->image.rows];
+	double** sqrtResult = new double*[this->image.rows];
 
 	for (int i = 0; i < this->image.rows; i++) {
 		substractResult[i] = new double[this->image.cols];
+		gradientXYPow[i] = new double[this->image.cols];
+		substractPow[i] = new double[this->image.cols];
+		addResult[i] = new double[this->image.cols];
+		sqrtResult[i] = new double[this->image.cols];
 	}
 
 	for (int i = 0; i < h_divide; i++) {
@@ -303,6 +311,14 @@ void CoreDetection::countCosineComponent(int blockSize){
 
 			this->subtractMatrix(this->gradientXX, this->gradientYY, substractResult, blockSize*i, blockSize*j);
 
+			this->powMatrix(this->gradientXY, gradientXYPow, 2, blockSize*i, blockSize*j);
+			this->powMatrix(substractResult, substractPow, 2, blockSize*i, blockSize*j);
+
+			this->addMatrix(gradientXYPow, substractPow, addResult, blockSize*i, blockSize*j);
+
+			this->sqrtMatrix(addResult, sqrtResult, blockSize*i, blockSize*j);
+
+			this->divideMatrix(substractResult, sqrtResult, this->cosineComponent, blockSize*i, blockSize*j);
 
 		}
 	}
@@ -310,9 +326,17 @@ void CoreDetection::countCosineComponent(int blockSize){
 	//deallocate
 	for (int i = 0; i < this->image.rows; i++) {
 		delete[] substractResult[i];
+		delete[] gradientXYPow[i];
+		delete[] substractPow[i];
+		delete[] addResult[i];
+		delete[] sqrtResult[i];
 	}
 
 	delete[] substractResult;
+	delete[] gradientXYPow;
+	delete[] substractPow;
+	delete[] addResult;
+	delete[] sqrtResult;
 }
 
 void CoreDetection::writeGradient(double ** in, std::string name)
@@ -403,9 +427,19 @@ void CoreDetection::detectCore(){
 	this->countSineComponent(blockSize);
 	this->countCosineComponent(blockSize);
 
+	//for each block, filter components
+	for (int i = 0; i < h_divide; i++) {
+		for (int j = 0; j < w_divide; j++) {
+			this->filtrGaussian(this->sineComponent, this->sineComponent, blockSize*i, blockSize*j);//gradientXX
+			this->filtrGaussian(this->cosineComponent, this->cosineComponent, blockSize*i, blockSize*j);//gradientXY
+		}
+	}
+
 	this->writeGradient(this->gradientX, "gradientX");
 	this->writeGradient(this->gradientY, "gradientY");
 	this->writeGradient(this->gradientXX, "gradientXX");
 	this->writeGradient(this->gradientXY, "gradientXY");
 	this->writeGradient(this->gradientYY, "gradientYY");
+	this->writeGradient(this->sineComponent, "sineComponent");
+	this->writeGradient(this->cosineComponent, "cosineComponent");
 }
