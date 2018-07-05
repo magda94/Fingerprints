@@ -73,7 +73,7 @@ void CoreDetection::countGradientY(){
 
 void CoreDetection::addMatrix(double ** in1, double ** in2, double ** out, int start_rows, int start_cols) {
 	int height = this->image.rows / h_divide;
-	int width = this->image.rows / w_divide;
+	int width = this->image.cols / w_divide;
 
 	Mat A = Mat(height, width, CV_32FC1);
 	Mat B = Mat(height, width, CV_32FC1);
@@ -89,6 +89,7 @@ void CoreDetection::addMatrix(double ** in1, double ** in2, double ** out, int s
 
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
+			//std::cout <<"Start_rows+i: "<<start_rows+i<< " Start_cols+j: "<<start_cols+j<< " \tI: " << i << " J: " << j << std::endl;
 			out[start_rows + i][start_cols + j] = result.at<float>(i, j);
 		}
 	}
@@ -193,8 +194,13 @@ void CoreDetection::filtrGaussian(double ** in, double ** out, int start_rows, i
 void CoreDetection::countSineComponent(int blockSize) {
 	//allocate
 	double** resultMatrix = new double*[this->image.rows];
+	double** gradientXYPow = new double*[this->image.rows];
+	double** addResult = new double*[this->image.rows];
+
 	for (int i = 0; i < this->image.rows; i++) {
 		resultMatrix[i] = new double[this->image.cols];
+		gradientXYPow[i] = new double[this->image.cols];
+		addResult[i] = new double[this->image.cols];
 	}
 
 	for (int i = 0; i < h_divide; i++) {
@@ -202,23 +208,32 @@ void CoreDetection::countSineComponent(int blockSize) {
 			std::cout << "\n\nNEW ITERATION\n\n";
 
 			this->subtractMatrix(this->gradientXX, this->gradientYY, resultMatrix, blockSize*i, blockSize*j);
-			std::cout << "GradientXX[10][10]=" << this->gradientXX[10+blockSize*i][10 + blockSize*j] << std::endl;
-			std::cout << "GradientYY[10][10]=" << this->gradientYY[10 + blockSize*i][10 + blockSize*j] << std::endl;
-			std::cout << "RESULT[10][10]=" << resultMatrix[10 + blockSize*i][10 + blockSize*j] << std::endl;
+			
+			//std::cout << "RESULT[10][10]=" << resultMatrix[10 + blockSize*i][10 + blockSize*j] << std::endl;
 
 			this->powMatrix(resultMatrix, resultMatrix, 2, blockSize*i, blockSize*j);
-			std::cout << "RESULT[10][10]=" << resultMatrix[10 + blockSize*i][10 + blockSize*j] << std::endl;
+			this->powMatrix(this->gradientXY, gradientXYPow, 2, blockSize*i, blockSize*j);
 
+			//this->addMatrix(gradientXYPow, resultMatrix, addResult, blockSize*i, blockSize*j);
+			this->addMatrix(gradientXYPow, resultMatrix, addResult, blockSize*i, blockSize*j);
 
-			//this->addMatrix();
+			std::cout << "RESULTMATRIX[10][10]=" << resultMatrix[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			std::cout << "GRADIENTXYPOW[10][10]=" << gradientXYPow[10 + blockSize * i][10 + blockSize * j] << std::endl;
+			std::cout << "RESULT[10][10]=" << addResult[10 + blockSize * i][10 + blockSize * j] << std::endl;
 
 		}
 	}
+
 	//deallocate
 	for (int i = 0; i < this->image.rows; i++) {
 		delete[] resultMatrix[i];
+		delete[] gradientXYPow[i];
+		delete[] addResult[i];
 	}
+
 	delete[] resultMatrix;
+	delete[] gradientXYPow;
+	delete[] addResult;
 }
 
 void CoreDetection::writeGradient(double ** in, std::string name)

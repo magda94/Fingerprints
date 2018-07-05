@@ -6,8 +6,10 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace cv;
+using namespace std;
 
 class CoreDetection {
 private:
@@ -37,7 +39,7 @@ private:
 
 	void filtrGaussian(double** in, double** out, int start_rows, int start_cols);
 	void countSineComponent(int blockSize);
-	void countCosineComponent(int start_rows, int start_cols);
+	void countCosineComponent(int blockSize);
 	
 	void countFieldOrientation();
 
