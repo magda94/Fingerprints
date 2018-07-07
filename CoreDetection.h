@@ -27,6 +27,7 @@ private:
 	double** sineComponent;
 	double** cosineComponent;
 	double** fieldOrientation;
+	double** poinCare;
 	double sigma;
 
 	double countMean();
@@ -51,6 +52,10 @@ private:
 
 	void countPoinCareTable();
 	double countPoinCare(int x, int y);
+	double checkDeltaForK(double delta);
+
+	void findPoinCare();
+	bool checkIfCore(int x, int y);
 
 	void writeGradient(double** in, std::string name);
 
