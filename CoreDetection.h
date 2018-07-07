@@ -8,6 +8,8 @@
 #include <fstream>
 #include <vector>
 
+#define M_PI 3.14159265358979323846
+
 using namespace cv;
 using namespace std;
 
@@ -24,6 +26,7 @@ private:
 	double** gradientYY;
 	double** sineComponent;
 	double** cosineComponent;
+	double** fieldOrientation;
 	double sigma;
 
 	double countMean();
@@ -43,7 +46,11 @@ private:
 	void countSineComponent(int blockSize);
 	void countCosineComponent(int blockSize);
 	
+	double countAtan(double x, double y);
 	void countFieldOrientation();
+
+	void countPoinCareTable();
+	double countPoinCare(int x, int y);
 
 	void writeGradient(double** in, std::string name);
 

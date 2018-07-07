@@ -339,6 +339,44 @@ void CoreDetection::countCosineComponent(int blockSize){
 	delete[] sqrtResult;
 }
 
+double CoreDetection::countAtan(double x, double y){
+	if (x > 0) {
+		return atan(y / x);
+	}
+	else if (x < 0 && y >= 0) {
+		return M_PI + atan(y / x);
+	}
+	else if (x < 0 && y < 0) {
+		return (-M_PI) + atan(y / x);
+	}
+	else if (x == 0 && y > 0) {
+		return M_PI / 2;
+	}
+	else if (x == 0 && y < 0) {
+		return (-M_PI / 2);
+	}
+	else if (x == 0 && y == 0) {
+		return 0;
+	}
+}
+
+void CoreDetection::countFieldOrientation(){
+	for (int i = 0; i < this->image.rows; i++) {
+		for (int j = 0; j < this->image.cols; j++) {
+			this->fieldOrientation[i][j] = M_PI/2 + this->countAtan(this->sineComponent[i][j], this->cosineComponent[i][j]) / 2;
+		}
+	}
+}
+
+void CoreDetection::countPoinCareTable() {
+
+}
+
+double CoreDetection::countPoinCare(int x, int y)
+{
+	return 0.0;
+}
+
 void CoreDetection::writeGradient(double ** in, std::string name)
 {
 	std::ofstream file;
@@ -365,6 +403,7 @@ CoreDetection::CoreDetection(const Mat & image){
 	gradientYY = new double*[this->image.rows];
 	sineComponent = new double*[this->image.rows];
 	cosineComponent = new double*[this->image.rows];
+	fieldOrientation = new double*[this->image.rows];
 
 	for (int i = 0; i < this->image.rows; i++) {
 		gradientX[i] = new double[this->image.cols];
@@ -374,6 +413,7 @@ CoreDetection::CoreDetection(const Mat & image){
 		gradientYY[i] = new double[this->image.cols];
 		sineComponent[i] = new double[this->image.cols];
 		cosineComponent[i] = new double[this->image.cols];
+		fieldOrientation[i] = new double[this->image.cols];
 	}
 }
 
@@ -387,6 +427,7 @@ CoreDetection::~CoreDetection(){
 		delete[] gradientXX[i];
 		delete[] sineComponent[i];
 		delete[] cosineComponent[i];
+		delete[] fieldOrientation[i];
 	}
 
 	delete[] gradientX;
@@ -396,6 +437,7 @@ CoreDetection::~CoreDetection(){
 	delete[] gradientYY;
 	delete[] sineComponent;
 	delete[] cosineComponent;
+	delete[] fieldOrientation;
 }
 
 void CoreDetection::detectCore(){
@@ -435,6 +477,10 @@ void CoreDetection::detectCore(){
 		}
 	}
 
+	this->countFieldOrientation();
+
+	this->countPoinCareTable();
+
 	this->writeGradient(this->gradientX, "gradientX");
 	this->writeGradient(this->gradientY, "gradientY");
 	this->writeGradient(this->gradientXX, "gradientXX");
@@ -442,4 +488,5 @@ void CoreDetection::detectCore(){
 	this->writeGradient(this->gradientYY, "gradientYY");
 	this->writeGradient(this->sineComponent, "sineComponent");
 	this->writeGradient(this->cosineComponent, "cosineComponent");
+	this->writeGradient(this->fieldOrientation, "fieldOrientation");
 }
