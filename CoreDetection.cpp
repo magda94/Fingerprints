@@ -416,6 +416,48 @@ double CoreDetection::checkDeltaForK(double delta) {
 	}
 }
 
+
+void CoreDetection::findMax() {
+	double max = -10;
+	int max_x = 0;
+	int max_y = 0;
+	for (int i = 1; i < this->image.rows - 1; i++) {
+		for (int j = 1; j < this->image.cols; j++) {
+			if (this->poinCare[i][j] > max) {
+				max = this->poinCare[i][j];
+				max_x = i;
+				max_y = j;
+			}
+		}
+	}
+
+	std::cout << "MAX_X: " << max_x << " MAX_Y: " << max_y << " = " << max << std::endl;
+	int count = 0;
+	vector<Point2i> corePoints;
+	for (int i = 1; i < this->image.rows - 1; i++) {
+		for (int j = 1; j < this->image.cols - 1; j++) {
+			if (this->poinCare[i][j] == max) {
+				count++;
+				corePoints.push_back(Point2i(i,j));
+			}
+		}
+	}
+
+	std::cout << "COUNT CORE : " << count << std::endl;
+
+	Mat temp;
+	temp = this->image.clone();
+	cvtColor(temp, temp, CV_GRAY2BGR);
+
+	for (int i = 0; i < corePoints.size(); i++) {
+		circle(temp, Point(corePoints.at(i).y, corePoints.at(i).x), 5, Scalar(0, 255, 0));
+	}
+	/*circle(temp, Point(max_y, max_x), 5, Scalar(0, 255, 0));
+	circle(temp, Point(max_x, max_y), 5, Scalar(0, 255, 0));*/
+
+	imshow("CORE", temp);
+}
+
 void CoreDetection::findPoinCare(){
 	std::vector<Point2i> corePoints;
 	for (int i = 1; i < this->image.rows - 1; i++) {
@@ -555,6 +597,7 @@ void CoreDetection::detectCore(){
 	this->countPoinCareTable();
 
 	this->findPoinCare();
+	this->findMax();
 
 	this->writeGradient(this->gradientX, "gradientX");
 	this->writeGradient(this->gradientY, "gradientY");

@@ -53,6 +53,7 @@ private:
 	void countPoinCareTable();
 	double countPoinCare(int x, int y);
 	double checkDeltaForK(double delta);
+	void findMax();
 
 	void findPoinCare();
 	bool checkIfCore(int x, int y);

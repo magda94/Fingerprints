@@ -117,17 +117,64 @@ double Filter::getValueNormalized(int imageValue, double mean, double mean0, dou
 	return newValue;
 }
 
-Mat Filter::centerMask(Mat image)
-{
-	int height_beg, height_end, width_beg, width_end;
+Mat Filter::centerMask(Mat maskImage) {
 
-	bool flag = false;
+	int mask_height_center, mask_width_center;
+	int image_height_center, image_width_center;
 
-	//height_beggining
-	for (int i = 0; i < image.rows; i++) {
-		for (int j = 0; j < image.cols; j++) {
+	image_height_center = floor(maskImage.rows / 2);
+	image_width_center = floor(maskImage.cols / 2);
+
+	int mask_beg_height, mask_end_height;
+	int mask_beg_width, mask_end_width;
+
+	int* tab = new int(4);
+
+	this->countCoordinates(this->image, tab);
+
+	mask_beg_height = tab[0];
+	mask_end_height = tab[1];
+	mask_beg_width = tab[2];
+	mask_end_width = tab[3];
+
+	mask_height_center = floor((mask_end_height + mask_beg_height) / 2);
+	mask_width_center = floor((mask_end_width + mask_beg_width) / 2);
+
+	Mat temp;
+	Mat this_image_temp;
+	temp = maskImage.clone();
+	this_image_temp = this->image.clone();
+
+	int move_height = image_height_center - mask_height_center;
+	int move_width = image_width_center - mask_width_center;
+
+	this->heightOffset = move_height;
+	this->widthOffset = move_width;
+
+	Mat trans_mat = (Mat_<double>(2, 3) << 1, 0, move_width, 0, 1, move_height);
+	bitwise_not(temp, temp);
+	bitwise_not(this_image_temp, this_image_temp);
+
+	warpAffine(temp, temp, trans_mat, image.size());
+	warpAffine(this_image_temp, this_image_temp, trans_mat, image.size());
+
+	bitwise_not(temp, temp);
+	bitwise_not(this_image_temp, this_image_temp);
+
+	delete[] tab;
+
+	this->image = this_image_temp.clone();
+	return temp;
+}
+
+void Filter::countCoordinates(Mat image, int * tab) {
+
+	//mask beggining height
+	bool flag = 0;
+	for (int i = 1; i < image.rows-1; i++) {
+		for (int j = 1; j < image.cols-1; j++) {
 			if ((int)image.at<uchar>(i, j) == 0) {
-				height_beg = i;
+				tab[0] = i;
 				flag = true;
 				break;
 			}
@@ -137,12 +184,12 @@ Mat Filter::centerMask(Mat image)
 		}
 	}
 
-	//height_end
+	//mask height_end
 	flag = false;
-	for (int i = image.rows - 1; i >= 0; i--) {
-		for (int j = 0; j < image.cols; j++) {
+	for (int i = image.rows - 2; i >= 1; i--) {
+		for (int j = 1; j < image.cols-1; j++) {
 			if ((int)image.at<uchar>(i, j) == 0) {
-				height_end = i;
+				tab[1] = i;
 				flag = true;
 				break;
 			}
@@ -154,10 +201,10 @@ Mat Filter::centerMask(Mat image)
 
 	//width_beggining
 	flag = false;
-	for (int j = 0; j < image.cols; j++) {
-		for (int i = 0; j < image.rows; i++) {
+	for (int j = 1; j < image.cols-1; j++) {
+		for (int i = 1; i < image.rows-1; i++) {
 			if ((int)image.at<uchar>(i, j) == 0) {
-				width_beg = j;
+				tab[2] = j;
 				flag = true;
 				break;
 			}
@@ -169,10 +216,10 @@ Mat Filter::centerMask(Mat image)
 
 	//width_end
 	flag = false;
-	for (int j = image.cols - 1; j >= 0; j--) {
-		for (int i = 0; j < image.rows; i++) {
+	for (int j = image.cols - 2; j >= 1; j--) {
+		for (int i = 1; i < image.rows-1; i++) {
 			if ((int)image.at<uchar>(i, j) == 0) {
-				width_end = j;
+				tab[3] = j;
 				flag = true;
 				break;
 			}
@@ -181,91 +228,6 @@ Mat Filter::centerMask(Mat image)
 			break;
 		}
 	}
-
-	std::cout << "H_B: " << height_beg << "\tH_E: " << height_end << "\tW_B: " << width_beg << "\tW_E: " << width_end << std::endl;
-
-	int avg_height = floor((height_beg + height_end)/2);
-	int avg_width = floor((width_beg + width_end)/2);
-
-	std::cout << " AVG_H: " << avg_height << "\tAVG_W: " << avg_width << std::endl;
-
-	int avg_height_image = floor(image.rows/2);
-	int avg_width_image = floor(image.cols/2);
-
-	std::cout << " AVG_H_I: " << avg_height_image << "\tAVG_W_I: " << avg_width_image << std::endl;
-
-	Mat temp_image(image.size(), image.type());
-	Mat temp_image_this(this->image.size(), this->image.type());
-
-	for (int i = 0; i < image.rows; i++) {
-		for (int j = 0; j < image.cols; j++) {
-			temp_image.at<uchar>(i, j) = 255;
-			temp_image_this.at<uchar>(i, j) = 255;
-		}
-	}
-
-	//I
-	for (int i = 0; i <= avg_height; i++) {
-		for (int j = 0; j <= avg_width; j++) {
-			if (avg_height_image > i && avg_width_image > j) {
-				temp_image.at<uchar>(avg_height_image - i, avg_width_image - j) = image.at<uchar>(avg_height - i, avg_width - j);
-				temp_image_this.at<uchar>(avg_height_image - i, avg_width_image - j) = this->image.at<uchar>(avg_height - i, avg_width - j);
-			}
-		}
-	}
-
-	/*cvtColor(temp_image, temp_image, CV_GRAY2BGR);
-	circle(temp_image, Point(avg_width_image, avg_height_image), 5, Scalar(255, 0, 0));
-	circle(temp_image, Point(avg_width, avg_height), 5, Scalar(0, 0, 255));*/
-
-	//II
-	for (int i = 0; i <= avg_height; i++) {
-		for (int j = 0; j <= avg_width; j++) {
-			if (avg_height_image > i && avg_width_image > j) {
-				temp_image.at<uchar>(avg_height_image - i, avg_width_image + j) = image.at<uchar>(avg_height - i, avg_width + j);
-				temp_image_this.at<uchar>(avg_height_image - i, avg_width_image + j) = this->image.at<uchar>(avg_height - i, avg_width + j);
-			}
-		}
-	}
-
-	//III
-	for (int i = 0; i <= avg_height; i++) {
-		for (int j = 0; j <= avg_width; j++) {
-			if (avg_height_image > i && avg_width_image > j) {
-				temp_image.at<uchar>(avg_height_image + i, avg_width_image + j) = image.at<uchar>(avg_height + i, avg_width + j);
-				temp_image_this.at<uchar>(avg_height_image + i, avg_width_image + j) = this->image.at<uchar>(avg_height + i, avg_width + j);
-			}
-		}
-	}
-
-	//IV
-	for (int i = 0; i <= avg_height; i++) {
-		for (int j = 0; j <= avg_width; j++) {
-			if (avg_height_image > i && avg_width_image > j) {
-				temp_image.at<uchar>(avg_height_image + i, avg_width_image - j) = image.at<uchar>(avg_height + i, avg_width - j);
-				temp_image_this.at<uchar>(avg_height_image + i, avg_width_image - j) = this->image.at<uchar>(avg_height + i, avg_width - j);
-			}
-		}
-	}
-
-
-	//border
-	for (int i = 0; i < image.rows; i++) {
-		temp_image.at<uchar>(i, 0) = (uchar)255;
-		temp_image.at<uchar>(i, image.cols-1) = (uchar)255;
-	}
-
-	for (int j = 0; j < image.cols; j++) {
-		temp_image.at<uchar>(0, j) = (uchar)255;
-		temp_image.at<uchar>(image.rows-1, j) = (uchar)255;
-	}
-
-	this->image = temp_image_this.clone();
-
-	//imshow("TEMP_MASK_IMAGE", temp_image_this);
-
-	return temp_image;
-	//return image;
 }
 
 Mat Filter::chooseBiggest(Mat fingerMask) {
@@ -430,14 +392,22 @@ Mat Filter::createMask() {
 		fingerMask.copyTo(temp);
 		n++;
 	}
-	//imshow("ORG FINGERMASK", fingerMask);
+
 	fingerMask = this->chooseBiggest(fingerMask);
-	//fingerMask = this->centerMask(fingerMask);
-	//imshow("FINGER MASK", fingerMask);
+	fingerMask = this->centerMask(fingerMask);
+
 	return fingerMask;
 }
 
 Mat Filter::getImage()
 {
 	return this->image;
+}
+
+int Filter::getHeightOffset() {
+	return heightOffset;
+}
+
+int Filter::getWidthOffset() {
+	return widthOffset;
 }

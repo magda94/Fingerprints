@@ -93,6 +93,94 @@ int ImageClass::calculateThreshold(double * histogramTab, int * MinAndMax)
 	return threshold;
 }
 
+void ImageClass::moveCore() {
+	std::string filename = getFilename();
+	std::string folder = getFolder();
+
+	std::string findFinger = folder + "/" + filename;
+
+	ifstream file;
+	ifstream newFile;
+
+	file.open("FingerDatabase/cores.data");
+	newFile.open("FingerDatabase/movedCores.data");
+
+	std::string name;
+	int x, y;
+
+	while (file >> name >> x >> y) {
+		if (name == findFinger) {
+			break;
+		}
+	}
+
+	int x2, y2;
+	std:string name2;
+	bool isPresent = false;
+	while (newFile >> name2 >> x2 >> y2) {
+		if (name2 == findFinger) {
+			std::cout << "FOUND" << std::endl;
+			isPresent = true;
+			break;
+		}
+	}
+
+	newFile.close();
+
+	if (!isPresent) {
+		ofstream newFile2;
+		newFile2.open("FingerDatabase/movedCores.data", std::ios::app);
+
+		if (x + this->widthOffset < 0 || x + this->widthOffset >= this->image.cols)
+			x = -1;
+		else
+			x = x + this->widthOffset;
+
+		if (y + this->heightOffset < 0 || y + this->heightOffset >= this->image.rows)
+			y = -1;
+		else
+			y = y + this->heightOffset;
+
+
+		newFile2 << findFinger << "\t" << x << "\t" << y << std::endl;
+
+		newFile2.close();
+	}
+
+	file.close();
+}
+
+std::string ImageClass::getFilename()
+{
+	std::string temp = "";
+	std::size_t index = this->filepath.rfind("/");
+
+	if (index != std::string::npos) {
+		temp = this->filepath.substr(index + 1);
+		std::size_t index2 = temp.rfind(".");
+
+		if (index2 != std::string::npos) {
+			temp = temp.substr(0, index2);
+		}
+	}
+	return temp;
+}
+
+std::string ImageClass::getFolder()
+{
+	std::string temp = "";
+	std::size_t index = this->filepath.find("/");
+
+	if (index != std::string::npos) {
+		temp = this->filepath.substr(index, index+1);
+
+
+		temp = temp.substr(1, 3);
+	}
+
+	return temp;
+}
+
 /*******************************************
 PUBLIC METHODS
 *******************************************/
@@ -157,14 +245,64 @@ void ImageClass::smoothImage() {
 void ImageClass::createMask() {
 	Filter filter(this->image);
 	Mat temp = filter.createMask();
-	//this->image = filter.getImage();
+	this->image = filter.getImage();
 	this->fingerMask = temp;
+
+	this->widthOffset = filter.getWidthOffset();
+	this->heightOffset = filter.getHeightOffset();
+	this->moveCore();
 }
 
 void ImageClass::skeletozation() {
 	Skeleton skeleton(this->image);
 	Mat temp = skeleton.makeSkeleton();
 	this->image = temp;
+	imshow("BEFORE", this->image);
+}
+
+void ImageClass::drawCore(){
+	ifstream newFile;
+	ifstream file;
+	newFile.open("FingerDatabase/movedCores.data");
+	file.open("FingerDatabase/cores.data");
+
+	std::string findFinger = this->getFolder()+ "/" + this->getFilename();
+	std::string name;
+	int x, y;
+
+	bool flag = false;
+	bool flag2 = false;
+
+	while (newFile >> name >> x >> y) {
+		if (name == findFinger) {
+			flag = true;
+			break;
+		}
+	}
+
+	std::string name2;
+	int x2, y2;
+	while (file >> name2 >> x2 >> y2) {
+		if (name2 == findFinger) {
+			flag2 = true;
+			break;
+		}
+	}
+
+
+	if (flag && flag2) {
+		std::cout << name << "x: " << x << " y: " << y << std::endl;
+		std::cout << name2 << " X: " << x2 << " Y: " << y2 << std::endl;
+
+		Mat temp;
+		temp = this->image.clone();
+		cvtColor(temp, temp, CV_GRAY2BGR);
+
+		circle(temp, Point(x, y), 5, Scalar(0, 255, 0));
+		circle(temp, Point(x2, y2), 5, Scalar(0, 0, 255));
+
+		imshow("CORE DRAW", temp);
+	}
 }
 
 void ImageClass::coreDetection(){

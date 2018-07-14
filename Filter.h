@@ -14,6 +14,10 @@ private:
 	Mat tempFingerMask;
 	vector<Point2i> buforList;
 	int counter;
+
+	int heightOffset;
+	int widthOffset;
+
 	int checkMedian(int x, int y);
 	bool checkNumberOfBlack(Mat image, int x, int y);
 	Mat chooseBiggest(Mat image);
@@ -22,6 +26,7 @@ private:
 	double getVariance(double mean);
 	double getValueNormalized(int imageValue, double mean, double mean0, double variance, double variance0);
 	Mat centerMask(Mat image);
+	void countCoordinates(Mat image, int* tab);
 public:
 	Filter(const Mat& image);
 	Mat filtrMedian();
@@ -30,6 +35,8 @@ public:
 	Mat normalize2();//filter with histogram 
 	Mat createMask();
 	Mat getImage();
+	int getHeightOffset();
+	int getWidthOffset();
 };
 
 #endif

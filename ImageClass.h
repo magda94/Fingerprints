@@ -5,6 +5,8 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include "Skeleton.h"
 #include "Filter.h"
@@ -23,6 +25,8 @@ private:
 	std::string filepath;
 	vector<Point2i> endPointsVector;
 	vector<Point2i> branchPointsVector;
+	int heightOffset;
+	int widthOffset;
 
 	Mat calculateHistogram(const Mat& image);
 	int* getMinAndMax(const Mat& histogram);
@@ -30,6 +34,9 @@ private:
 	double* smoothHistogram(double* histogramTab, int* MinAndMax);
 	bool bimodalTest(double* tab, int length);
 	int calculateThreshold(double* histogramTab, int* MinAndMax);
+	void moveCore();
+	std::string getFilename();
+	std::string getFolder();
 public:
 	ImageClass(const Mat& image, std::string file);
 	Mat& getImage();
@@ -41,6 +48,7 @@ public:
 	void smoothImage();
 	void createMask();
 	void skeletozation();
+	void drawCore();
 	void coreDetection();
 	void findMinutiae();
 	void methodI();
