@@ -303,6 +303,7 @@ void ImageClass::drawCore(){
 
 		imshow("CORE DRAW", temp);
 	}
+
 }
 
 void ImageClass::coreDetection(){

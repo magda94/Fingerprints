@@ -151,6 +151,8 @@ Mat Filter::centerMask(Mat maskImage) {
 	this->heightOffset = move_height;
 	this->widthOffset = move_width;
 
+	std::cout << "HOFFSET " << this->heightOffset << " WOFFSET " << this->widthOffset << std::endl;
+
 	Mat trans_mat = (Mat_<double>(2, 3) << 1, 0, move_width, 0, 1, move_height);
 	bitwise_not(temp, temp);
 	bitwise_not(this_image_temp, this_image_temp);
