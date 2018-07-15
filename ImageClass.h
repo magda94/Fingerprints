@@ -52,6 +52,7 @@ public:
 	void coreDetection();
 	void findMinutiae();
 	void methodI();
+	void methodII();
 	void clasifyMethodI();
 };
 

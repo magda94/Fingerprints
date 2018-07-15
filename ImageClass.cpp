@@ -334,6 +334,12 @@ void ImageClass::methodI() {
 	delete methodI;
 }
 
+void ImageClass::methodII() {
+	Method* methodII = new MethodII(this->image, this->filepath);
+	methodII->writeToFile(this->endPointsVector, this->branchPointsVector);
+	delete methodII;
+}
+
 void ImageClass::clasifyMethodI() {
 	Classification classification(this->filepath);
 	classification.getClassification();
