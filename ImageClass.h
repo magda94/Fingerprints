@@ -12,6 +12,7 @@
 #include "Filter.h"
 #include "Minutiae.h"
 #include "MethodI.h"
+#include "MethodII.h"
 #include "Classification.h"
 #include "CoreDetection.h"
 

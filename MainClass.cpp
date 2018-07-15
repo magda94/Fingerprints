@@ -27,7 +27,7 @@ int main(int, char**)
 	imageClass.findMinutiae();
 	imageClass.methodI();
 	imageClass.methodII();
-	imageClass.clasifyMethodI();
+	//imageClass.clasifyMethodI();
 
 	imageClass.showImage();
 

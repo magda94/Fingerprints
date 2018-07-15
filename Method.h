@@ -1,5 +1,5 @@
 #ifndef METHOD_HH
-#define METHOD_H
+#define METHOD_HH
 
 #include "opencv2/opencv.hpp"
 
