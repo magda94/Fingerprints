@@ -8,10 +8,9 @@ using namespace cv;
 
 int main(int, char**)
 {
-	std::string filepath = "FingerDatabase/p01/w01.bmp";
+	std::string filepath = "FingerDatabase/p02/k03.bmp";
 
 	Mat img = imread(filepath, CV_LOAD_IMAGE_GRAYSCALE);
-	//Mat img = imread("FingerDatabase/lena.png", CV_LOAD_IMAGE_GRAYSCALE);
 
 	imshow("ORG", img);
 	std::cout << "Create ImageClass\n\n";
@@ -25,7 +24,7 @@ int main(int, char**)
 	imageClass.skeletozation();
 	imageClass.drawCore();
 	//imageClass.coreDetection();
-	//imageClass.findMinutiae();
+	imageClass.findMinutiae();
 	//imageClass.methodI();
 	//imageClass.clasifyMethodI();
 

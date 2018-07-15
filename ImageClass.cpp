@@ -108,45 +108,61 @@ void ImageClass::moveCore() {
 	std::string name;
 	int x, y;
 
+	bool isPresentInCores = false;
 	while (file >> name >> x >> y) {
 		if (name == findFinger) {
+			isPresentInCores = true;
 			break;
 		}
 	}
 
-	int x2, y2;
-	std:string name2;
-	bool isPresent = false;
-	while (newFile >> name2 >> x2 >> y2) {
-		if (name2 == findFinger) {
-			std::cout << "FOUND" << std::endl;
-			isPresent = true;
-			break;
+	if (isPresentInCores) {
+		//there is no core point
+		if (x == -1 && y == -1) {
+			ofstream newFile2;
+			newFile2.open("FingerDatabase/movedCores.data", std::ios::app);
+
+			newFile2 << findFinger << "\t" << -1 << "\t" << -1 << std::endl;
+			newFile2.close();
+		} else {
+			int x2, y2;
+			std:string name2;
+			bool isPresent = false;
+			while (newFile >> name2 >> x2 >> y2) {
+				if (name2 == findFinger) {
+					std::cout << "FOUND" << std::endl;
+					isPresent = true;
+					break;
+				}
+			}
+
+			newFile.close();
+
+			if (!isPresent) {
+				ofstream newFile2;
+				newFile2.open("FingerDatabase/movedCores.data", std::ios::app);
+
+				if (x + this->widthOffset < 0 || x + this->widthOffset >= this->image.cols)
+					x = -1;
+				else
+					x = x + this->widthOffset;
+
+				if (y + this->heightOffset < 0 || y + this->heightOffset >= this->image.rows)
+					y = -1;
+				else
+					y = y + this->heightOffset;
+
+
+				newFile2 << findFinger << "\t" << x << "\t" << y << std::endl;
+
+				newFile2.close();
+			}
 		}
+
 	}
-
-	newFile.close();
-
-	if (!isPresent) {
-		ofstream newFile2;
-		newFile2.open("FingerDatabase/movedCores.data", std::ios::app);
-
-		if (x + this->widthOffset < 0 || x + this->widthOffset >= this->image.cols)
-			x = -1;
-		else
-			x = x + this->widthOffset;
-
-		if (y + this->heightOffset < 0 || y + this->heightOffset >= this->image.rows)
-			y = -1;
-		else
-			y = y + this->heightOffset;
-
-
-		newFile2 << findFinger << "\t" << x << "\t" << y << std::endl;
-
-		newFile2.close();
+	else {
+		std::cout << "This finger is not present in cores.data" << std::endl;
 	}
-
 	file.close();
 }
 
@@ -264,14 +280,12 @@ void ImageClass::drawCore(){
 	ifstream newFile;
 	ifstream file;
 	newFile.open("FingerDatabase/movedCores.data");
-	file.open("FingerDatabase/cores.data");
 
 	std::string findFinger = this->getFolder()+ "/" + this->getFilename();
 	std::string name;
 	int x, y;
 
 	bool flag = false;
-	bool flag2 = false;
 
 	while (newFile >> name >> x >> y) {
 		if (name == findFinger) {
@@ -280,28 +294,24 @@ void ImageClass::drawCore(){
 		}
 	}
 
-	std::string name2;
-	int x2, y2;
-	while (file >> name2 >> x2 >> y2) {
-		if (name2 == findFinger) {
-			flag2 = true;
-			break;
-		}
+	//there is no core point
+	if (x == -1 && y == -1) {
+		flag = false;
 	}
 
-
-	if (flag && flag2) {
+	if (flag) {
 		std::cout << name << "x: " << x << " y: " << y << std::endl;
-		std::cout << name2 << " X: " << x2 << " Y: " << y2 << std::endl;
 
 		Mat temp;
 		temp = this->image.clone();
 		cvtColor(temp, temp, CV_GRAY2BGR);
 
 		circle(temp, Point(x, y), 5, Scalar(0, 255, 0));
-		circle(temp, Point(x2, y2), 5, Scalar(0, 0, 255));
 
 		imshow("CORE DRAW", temp);
+	}
+	else {
+		std::cout << "There is no core point for this finger" << std::endl;
 	}
 
 }
