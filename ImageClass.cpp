@@ -278,7 +278,6 @@ void ImageClass::skeletozation() {
 
 void ImageClass::drawCore(){
 	ifstream newFile;
-	ifstream file;
 	newFile.open("FingerDatabase/movedCores.data");
 
 	std::string findFinger = this->getFolder()+ "/" + this->getFilename();

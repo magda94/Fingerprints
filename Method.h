@@ -25,7 +25,7 @@ protected:
 	void writeEndsToFile(ofstream* file, const vector<Point2i> endPointsVector);
 	void writeBranchToFile(ofstream* file, const vector<Point2i> branchPointsVector);
 public:
-	void writeToFile(const vector<Point2i> endPointsVector, const vector<Point2i> branchPointsVector);
+	virtual void writeToFile(const vector<Point2i> endPointsVector, const vector<Point2i> branchPointsVector);
 };
 
 #endif
