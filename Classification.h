@@ -8,7 +8,7 @@
 #include <cmath>
 #include <vector>
 
-#include "MinutiaeInformation.h"
+#include "MinutiaeInformationI.h"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ private:
 	string fingerName;
 	string rootPath;
 	string filepath;
-	vector<MinutiaeInformation> sample;
+	vector<MinutiaeInformationI> sample;
 	vector<double> compareResults;
 	int numberOfGroup;
 
@@ -30,8 +30,8 @@ private:
 	std::string getFingerName();
 	void getSampleInformation();
 	void compareToOther();
-	double compareToFinger(const vector<MinutiaeInformation> otherFinger);
-	double findTheLowest(vector<MinutiaeInformation> otherFinger, MinutiaeInformation minutiae);
+	double compareToFinger(const vector<MinutiaeInformationI> otherFinger);
+	double findTheLowest(vector<MinutiaeInformationI> otherFinger, MinutiaeInformationI minutiae);
 	void searchPatterns();
 	void findTrueGroup();
 

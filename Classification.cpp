@@ -45,7 +45,7 @@ void Classification::getSampleInformation() {
 	int x, y, type;
 
 	while (sampleFile >> type >> x >> y) {
-		this->sample.push_back(MinutiaeInformation(x, y, type));
+		this->sample.push_back(MinutiaeInformationI(x, y, type));
 	}
 
 	sampleFile.close();
@@ -54,7 +54,7 @@ void Classification::getSampleInformation() {
 
 void Classification::compareToOther() {
 	for (int i = 1; i <= this->patternCount; i++) {
-		vector<MinutiaeInformation> otherFinger;
+		vector<MinutiaeInformationI> otherFinger;
 		ifstream otherFile;
 		stringstream intStream;
 		intStream << i;
@@ -74,7 +74,7 @@ void Classification::compareToOther() {
 		int x, y, type;
 
 		while (otherFile >> type >> x >> y) {
-			otherFinger.push_back(MinutiaeInformation(x, y, type));
+			otherFinger.push_back(MinutiaeInformationI(x, y, type));
 		}
 
 		this->compareResults.push_back(this->compareToFinger(otherFinger));
@@ -83,7 +83,7 @@ void Classification::compareToOther() {
 	}
 }
 
-double Classification::compareToFinger(vector<MinutiaeInformation> otherFinger) {
+double Classification::compareToFinger(vector<MinutiaeInformationI> otherFinger) {
 	double result = 0.0;
 
 	for (int i = 0; i < this->sample.size(); i++) {
@@ -93,7 +93,7 @@ double Classification::compareToFinger(vector<MinutiaeInformation> otherFinger) 
 	return result;
 }
 
-double Classification::findTheLowest(vector<MinutiaeInformation> otherFinger, MinutiaeInformation minutiae)
+double Classification::findTheLowest(vector<MinutiaeInformationI> otherFinger, MinutiaeInformationI minutiae)
 {
 	double result = std::numeric_limits<double>::max();
 

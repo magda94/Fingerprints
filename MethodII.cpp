@@ -37,8 +37,83 @@ void MethodII::getXYCoordinates(std::string fingerToFind, int * tabXY) {
 		std::cout << "There is no finger" << std::endl;
 	}
 
-	tabXY[0] = x;
-	tabXY[1] = y;
+	//according to Point(y,x) y->x and x->y, change the place
+	tabXY[0] = y;
+	tabXY[1] = x;
+}
+
+void MethodII::readFromFile(std::string fingerToFind, int* tabXY) {
+	ifstream file;
+	std::string fingerToFindPath = "FingerDatabase/" + fingerToFind + ".txt";
+
+	file.open(fingerToFindPath);
+
+	int type, x, y;
+
+	while (file >> type >> x >> y) {
+		int newX = x - tabXY[0];
+		int newY = y - tabXY[1];
+
+		double r = this->countR(newX, newY);
+		if (r != 0) {
+			double phi = this->countPhi(newX, newY);
+			MinutiaeInformationII minutiaeInfo(type, r, phi);
+			this->minutiaeInformation.push_back(minutiaeInfo);
+		}
+	}
+
+	file.close();
+}
+
+double MethodII::countR(int x, int y) {
+	double xPow = pow(x, 2);
+	double yPow = pow(y, 2);
+	double r = sqrt(xPow + yPow);
+	return r;
+}
+
+
+//x->rows y->cols (change place) in function just changed
+double MethodII::countPhi(int y, int x) {
+	if (x > 0 && y >= 0) {
+		return atan(y / x);
+	}
+	else if (x > 0 && y < 0) {
+		return atan(y / x) + 2 * M_PI;
+	}
+	else if (x < 0) {
+		return atan(y / x) + M_PI;
+	}
+	else if (x == 0 && y > 0) {
+		return M_PI / 2;
+	}
+	else if (x == 0 && y < 0) {
+		return (3 * M_PI) / 2;
+	}
+}
+
+void MethodII::coordinatesToFile(std::string fingerToFind) {
+	ofstream file;
+	std::string fileToWritePath = "FingerDatabase/" + fingerToFind + "M2.txt";
+	file.open(fileToWritePath);
+
+	bool flag = false;
+	bool isSpaceAdded = false;
+
+	for (int i = 0; i < this->minutiaeInformation.size(); i++) {
+		if (minutiaeInformation.at(i).getType() == 2 && flag == false) {
+			flag = true;
+		}
+
+		if (flag == true && isSpaceAdded == false) {
+			isSpaceAdded = true;
+			file << "\n\n\n";
+		}
+
+		file << minutiaeInformation.at(i).getType() << "\t" << minutiaeInformation.at(i).getR() << "\t" << minutiaeInformation.at(i).getPhi() << std::endl;
+	}
+
+	file.close();
 }
 
 /*******************************************
@@ -48,6 +123,7 @@ PUBLIC METHODS
 MethodII::MethodII(const Mat& image, std::string filepath) {
 	this->image = image;
 	this->filepath = filepath;
+
 }
 
 void MethodII::writeToFile(const vector<Point2i> endPointsVector, const vector<Point2i> branchPointsVector) {
@@ -60,6 +136,10 @@ void MethodII::writeToFile(const vector<Point2i> endPointsVector, const vector<P
 		std::cout << "There is no core point. Cannot do methodII" << std::endl;
 		goto endOfFunction;
 	}
+
+	this->readFromFile(fingerToFind, tabXY);
+
+	this->coordinatesToFile(fingerToFind);
 	
 	//etykieta end of function
 	endOfFunction:
