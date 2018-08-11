@@ -19,6 +19,7 @@ private:
 	string fingerName;
 	string rootPath;
 	string filepath;
+	string verifyPath;
 	vector<MinutiaeInformationI> sample;
 	vector<double> compareResults;
 	int numberOfGroup;
@@ -37,7 +38,7 @@ private:
 
 	void showResult();
 public:
-	Classification(string filepath);
+	Classification(string filepath, string verifyPath);
 	void getClassification();
 };
 

@@ -200,10 +200,11 @@ std::string ImageClass::getFolder()
 /*******************************************
 PUBLIC METHODS
 *******************************************/
-ImageClass::ImageClass(const Mat& image, std::string filepath) {
+ImageClass::ImageClass(const Mat& image, std::string filepath, std::string verifyPath) {
 	this->image = image;
 	this->orgImage = image.clone();
 	this->filepath = filepath;
+	this->verifyPath = verifyPath;
 }
 
 Mat& ImageClass::getImage() {

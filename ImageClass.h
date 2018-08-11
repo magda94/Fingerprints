@@ -24,6 +24,7 @@ private:
 	Mat orgImage;
 	Mat fingerMask;
 	std::string filepath;
+	std::string verifyPath;
 	vector<Point2i> endPointsVector;
 	vector<Point2i> branchPointsVector;
 	int heightOffset;
@@ -39,7 +40,7 @@ private:
 	std::string getFilename();
 	std::string getFolder();
 public:
-	ImageClass(const Mat& image, std::string file);
+	ImageClass(const Mat& image, std::string filepath, std::string verifyPath);
 	Mat& getImage();
 	void filtrImage();
 	void showImage();

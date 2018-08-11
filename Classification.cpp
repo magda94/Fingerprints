@@ -144,8 +144,9 @@ void Classification::showResult() {
 /*******************************************
 PUBLIC METHODS
 *******************************************/
-Classification::Classification(string filepath) {
+Classification::Classification(string filepath, string verifyPath) {
 	this->filepath = filepath;
+	this->verifyPath = verifyPath;
 }
 
 void Classification::getClassification() {
