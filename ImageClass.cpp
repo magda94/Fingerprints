@@ -245,10 +245,6 @@ void ImageClass::binaryImage() {
 
 	Mat temp;
 	cv::threshold(this->image, this->image, 5, 255, CV_THRESH_BINARY_INV );
-	//cv::threshold(this->image, this->image, threshold / 3, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
-	//cv::threshold(this->image, this->image, threshold/5, 255, CV_THRESH_BINARY_INV);
-	//imshow("BINARY TEMP" , temp);
-	//imshow("BINARY", this->image);
 	delete[] histogramTab;
 }
 
@@ -273,7 +269,6 @@ void ImageClass::skeletozation() {
 	Skeleton skeleton(this->image);
 	Mat temp = skeleton.makeSkeleton();
 	this->image = temp;
-	imshow("BEFORE", this->image);
 }
 
 void ImageClass::drawCore(){

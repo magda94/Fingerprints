@@ -163,6 +163,9 @@ Mat Filter::centerMask(Mat maskImage) {
 	bitwise_not(temp, temp);
 	bitwise_not(this_image_temp, this_image_temp);
 
+	imshow("BEFORE", maskImage);
+	imshow("AFTER", temp);
+
 	delete[] tab;
 
 	this->image = this_image_temp.clone();
@@ -272,6 +275,7 @@ Mat Filter::chooseBiggest(Mat fingerMask) {
 			}
 		}
 	}
+
 	return newFingerMask;
 }
 
@@ -286,13 +290,13 @@ Mat Filter::filtrMedian() {
 	Mat temp(this->image.size(), this->image.type());
 
 	for (int i = 0; i < this->image.rows; i++) {
-		temp.at<uchar>(i,0) = (uchar) 255;
-		temp.at<uchar>(i, this->image.cols - 1) = (uchar)255;
+		temp.at<uchar>(i,0) = (uchar) 0;
+		temp.at<uchar>(i, this->image.cols - 1) = (uchar)0;
 	}
 
 	for (int j = 0; j < this->image.cols; j++) {
-		temp.at<uchar>(0, j) = (uchar)255;
-		temp.at<uchar>(this->image.rows - 1, j) = (uchar)255;
+		temp.at<uchar>(0, j) = (uchar)0;
+		temp.at<uchar>(this->image.rows - 1, j) = (uchar)0;
  	}
 
 	for (int i = 1; i < this->image.rows-1; i++) {
@@ -309,7 +313,7 @@ Mat Filter::filtrMedian() {
 Mat Filter::reduceHoles() {
 	int shape = MORPH_CROSS;
 	int size = 3;
-	int operation = MORPH_CLOSE;
+	int operation = MORPH_CLOSE; //open-> close, close->open
 	Mat temp;
 
 	Mat element = getStructuringElement(shape, Size(size,size), Point(1,1));
