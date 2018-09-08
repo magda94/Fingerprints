@@ -163,9 +163,6 @@ Mat Filter::centerMask(Mat maskImage) {
 	bitwise_not(temp, temp);
 	bitwise_not(this_image_temp, this_image_temp);
 
-	imshow("BEFORE", maskImage);
-	imshow("AFTER", temp);
-
 	delete[] tab;
 
 	this->image = this_image_temp.clone();
@@ -313,14 +310,18 @@ Mat Filter::filtrMedian() {
 Mat Filter::reduceHoles() {
 	int shape = MORPH_CROSS;
 	int size = 3;
-	int operation = MORPH_CLOSE; //open-> close, close->open
+	int operation = MORPH_CLOSE; //open-> close, close->open (for white pixel)
 	Mat temp;
+	Mat temp2;
 
+	bitwise_not(this->image, this->image);
+	imshow("BEFORE REDUCE", this->image);
 	Mat element = getStructuringElement(shape, Size(size,size), Point(1,1));
-	morphologyEx(this->image,temp, operation, element);
-	this->image = temp;
+	morphologyEx(this->image, temp, operation, element);
+	this->image = temp.clone();
+	bitwise_not(this->image, this->image);
 
-	//imshow("REDUCE HOLES",this->image);
+	imshow("REDUCE HOLES",this->image);
 	return this->image;
 }
 

@@ -39,10 +39,10 @@ void mainMenu() {
 
 std::string createPath(std::string personNumber, char finger) {
 	std::string path = "FingerDatabase/p";
-	if (stoi(personNumber) >= 1 && stoi(personNumber) <= 9) {
-		return path + "0" + personNumber + "/" + finger;
+	if (personNumber.size() == 1 && (stoi(personNumber) >= 1 && stoi(personNumber) <= 9)) {
+		return path + "0" + personNumber + "/" + finger + "01";
 	}
-	return path + personNumber + "/" + finger;
+	return path + personNumber + "/" + finger + "01";
 }
 
 char getFingerCharacter() {
@@ -59,8 +59,8 @@ char getFingerCharacter() {
 		}
 		std::cout << std::endl;
 		std::cout << "PODALES ZLY PALEC " << std::endl;
-		system("pause");
-		system("cls");
+		//system("pause");
+		//system("cls");
 	}
 
 }
@@ -72,14 +72,14 @@ void actionController(char action) {
 	switch (toupper(action)) {
 
 	case 'W': {
-		std::cout << "Podej sciezke do odcisku: ";
+		std::cout << "Podej sciezke weryfikowanego odcisku: ";
 		std::cin >> searchPath;
 		std::cout << "Podaj numer osoby (np. 01, 02,...): ";
 		std::cin >> personNumber;
 
 		std::string verifyPath = createPath(personNumber, getFingerCharacter());
 
-		std::cout << verifyPath << std::endl;
+		std::cout << "VERIFY PATH: " << verifyPath << std::endl;
 		doAction(searchPath, verifyPath);
 
 		break;
@@ -97,8 +97,8 @@ void actionController(char action) {
 	}
 
 	}
-	system("pause");
-	system("cls");
+	//system("pause");
+	//system("cls");
 }
 
 void doAction(std::string searchPath, std::string verifyPath) {
@@ -110,7 +110,6 @@ void doAction(std::string searchPath, std::string verifyPath) {
 	std::cout << "Create ImageClass\n\n";
 	ImageClass imageClass = ImageClass(img, filepath, verifyPath);
 	imageClass.showImage();
-	//imageClass.normalizeImage();
 	imageClass.filtrImage();
 	imageClass.binaryImage();
 	imageClass.smoothImage();
@@ -118,10 +117,10 @@ void doAction(std::string searchPath, std::string verifyPath) {
 	imageClass.skeletozation();
 	imageClass.drawCore();
 	//imageClass.coreDetection();
-	//imageClass.findMinutiae();
-	/*imageClass.methodI();
+	imageClass.findMinutiae();
+	imageClass.methodI();
 	imageClass.methodII();
-	//imageClass.clasifyMethodI();*/
+	imageClass.clasifyMethodI();
 
 	imageClass.showImage();
 }

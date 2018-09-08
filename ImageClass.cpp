@@ -336,6 +336,6 @@ void ImageClass::methodII() {
 }
 
 void ImageClass::clasifyMethodI() {
-	Classification classification(this->filepath);
+	ClassificationI classification(this->filepath, this->verifyPath);
 	classification.getClassification();
 }

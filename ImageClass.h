@@ -13,7 +13,7 @@
 #include "Minutiae.h"
 #include "MethodI.h"
 #include "MethodII.h"
-#include "Classification.h"
+#include "ClassificationI.h"
 #include "CoreDetection.h"
 
 using namespace cv;

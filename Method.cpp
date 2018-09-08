@@ -52,7 +52,7 @@ void Method::writeToFile(const vector<Point2i> endPointsVector, const vector<Poi
 
 
 	ofstream file;
-	file.open(folder + this->filename + ".txt");
+	file.open(folder + this->filename + "M1.txt");
 	this->writeEndsToFile(&file, endPointsVector);
 	file << "\n\n\n";
 	this->writeBranchToFile(&file, branchPointsVector);
