@@ -121,6 +121,7 @@ void doAction(std::string searchPath, std::string verifyPath) {
 	imageClass.methodI();
 	imageClass.methodII();
 	imageClass.clasifyMethodI();
+	imageClass.clasifyMethodII();
 
 	imageClass.showImage();
 }

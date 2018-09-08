@@ -1,28 +1,29 @@
-#include "ClassificationI.h"
+#include "ClassificationII.h"
+
 /*******************************************
+
 PRIVATE METHODS
 *******************************************/
 
-
-std::string ClassificationI::getFilename() {
+std::string ClassificationII::getFilename() {
 	std::string temp = "";
-	
+
 	std::size_t index = this->filepath.find_last_of(".");
 	temp = this->filepath.substr(0, index);
 	return temp;
 }
 
-std::string ClassificationI::getRootFolder() {
+std::string ClassificationII::getRootFolder() {
 	std::string temp = "";
 	std::size_t index = this->filepath.find_last_of("/");
-	
-	temp = this->filepath.substr(0, index );
+
+	temp = this->filepath.substr(0, index);
 	index = temp.find_last_of("/");
 
 	return temp;
 }
 
-std::string ClassificationI::getFingerName() {
+std::string ClassificationII::getFingerName() {
 	std::string temp = "";
 	std::size_t index = this->filepath.rfind("/");
 
@@ -37,15 +38,15 @@ std::string ClassificationI::getFingerName() {
 	return temp;
 }
 
-void ClassificationI::getSampleInformation() {
+void ClassificationII::getSampleInformation() {
 	ifstream sampleFile;
-	string sampleName = this->filename + "M1.txt";
+	string sampleName = this->filename + "M2.txt";
 
 	sampleFile.open(sampleName);
-	int x, y, type;
+	int r, phi, type;
 
-	while (sampleFile >> type >> x >> y) {
-		this->sample.push_back(MinutiaeInformationI(x, y, type));
+	while (sampleFile >> type >> r >> phi) {
+		this->sample.push_back(MinutiaeInformationII(type, r, phi));
 	}
 
 	sampleFile.close();
@@ -53,23 +54,24 @@ void ClassificationI::getSampleInformation() {
 }
 
 
-int ClassificationI::compareToFinger(vector<MinutiaeInformationI> otherFinger) {
+int ClassificationII::compareToFinger(vector<MinutiaeInformationII> otherFinger) {
 	int counter = 0;
 
-	int windowSize = 9;
+	int windowSize = 50;
 
+	std::cout << "FILE SIZE " << this->pattern.size() <<std::endl;
 	for (int i = 0; i < this->sample.size(); i++) {
 		int index = this->findTheLowest(otherFinger, this->sample.at(i));
+		std::cout << "INDEX " << index << std::endl;
 
-		int patternX = otherFinger.at(index).getX();
-		int patternY = otherFinger.at(index).getY();
-		int sampleX = this->sample.at(i).getX();
-		int sampleY = this->sample.at(i).getY();
+		int patternR = otherFinger.at(index).getR();
+		int patternPhi = otherFinger.at(index).getPhi();
+		int sampleR = this->sample.at(i).getR();
+		int samplePhi = this->sample.at(i).getPhi();
 
-		int deltaX = patternX - sampleX;
-		int deltaY = patternY - sampleY;
+		int deltaR = patternR - sampleR;
 
-		if (deltaX < windowSize && deltaY < windowSize) {
+		if (deltaR < windowSize && patternPhi == samplePhi) {
 			counter++;
 		}
 	}
@@ -77,17 +79,15 @@ int ClassificationI::compareToFinger(vector<MinutiaeInformationI> otherFinger) {
 	return counter;
 }
 
-int ClassificationI::findTheLowest(vector<MinutiaeInformationI> otherFinger, MinutiaeInformationI minutiae)
+int ClassificationII::findTheLowest(vector<MinutiaeInformationII> otherFinger, MinutiaeInformationII minutiae)
 {
 	double result = std::numeric_limits<double>::max();
 	int index = 0;
 
 	for (int i = 0; i < otherFinger.size(); i++) {
 		if (otherFinger.at(i).getType() == minutiae.getType()) {
-			double tempX = pow(otherFinger.at(i).getX() - minutiae.getX(), 2);
-			double tempY = pow(otherFinger.at(i).getX() - minutiae.getX(), 2);
-
-			double temp = sqrt(tempX + tempY);
+			
+			double temp = abs(otherFinger.at(i).getR() - minutiae.getR());
 
 			if (temp < result) {
 				index = i;
@@ -99,8 +99,8 @@ int ClassificationI::findTheLowest(vector<MinutiaeInformationI> otherFinger, Min
 	return index;
 }
 
-bool ClassificationI::isTrueGroup() {
-	
+bool ClassificationII::isTrueGroup() {
+
 	this->readPattern();
 
 	int counter = this->compareToFinger(this->pattern);
@@ -112,21 +112,23 @@ bool ClassificationI::isTrueGroup() {
 	return false;
 }
 
-void ClassificationI::readPattern() {
-	std::string patternPath =  this->verifyPath + "M1.txt";
+void ClassificationII::readPattern() {
+	std::string patternPath = this->verifyPath + "M2.txt";
+	std::cout << "PATTERN " << patternPath << std::endl;
 	ifstream patternFile;
 	patternFile.open(patternPath);
-	int x, y, type;
+	int r, phi, type;
 
-	while (patternFile >> type >> x >> y) {
-		this->pattern.push_back(MinutiaeInformationI(x, y, type));
+	while (patternFile >> type >> r >> phi) {
+		std::cout << "HFJFH" << std::endl;
+		this->pattern.push_back(MinutiaeInformationII(r, phi, type));
 	}
 
 	patternFile.close();
 }
 
-void ClassificationI::showResult(bool result) {
-	std::cout << "\nMETHOD 1: " << std::endl;
+void ClassificationII::showResult(bool result) {
+	std::cout << "\nMETHOD 2: " << std::endl;
 	std::cout << "FILE: " << this->filename << std::endl;
 	std::cout << "VERIFYFILE: " << this->verifyPath << std::endl;
 
@@ -141,16 +143,16 @@ void ClassificationI::showResult(bool result) {
 
 PUBLIC METHODS
 *******************************************/
-ClassificationI::ClassificationI(string filepath, string verifyPath) {
+ClassificationII::ClassificationII(string filepath, string verifyPath) {
 	this->filepath = filepath;
 	this->verifyPath = verifyPath;
 }
 
-void ClassificationI::getClassification() {
+void ClassificationII::getClassification() {
 	this->filename = getFilename();
 	this->fingerName = getFingerName();
 	this->rootPath = getRootFolder();
-	
+
 	this->getSampleInformation();
 
 	this->showResult(this->isTrueGroup());

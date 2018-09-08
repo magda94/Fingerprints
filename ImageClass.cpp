@@ -339,3 +339,8 @@ void ImageClass::clasifyMethodI() {
 	ClassificationI classification(this->filepath, this->verifyPath);
 	classification.getClassification();
 }
+
+void ImageClass::clasifyMethodII() {
+	ClassificationII classification(this->filepath, this->verifyPath);
+	classification.getClassification();
+}

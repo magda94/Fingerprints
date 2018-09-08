@@ -194,8 +194,5 @@ Mat Skeleton::makeSkeleton() {
 		temp.copyTo(this->image);
 	} while (globalFlag);
 
-	imshow("skeleton org", this->image);
-
-	std::cout << "END" << std::endl;
 	return this->image;
 }

@@ -14,6 +14,7 @@
 #include "MethodI.h"
 #include "MethodII.h"
 #include "ClassificationI.h"
+#include "ClassificationII.h"
 #include "CoreDetection.h"
 
 using namespace cv;
@@ -56,6 +57,7 @@ public:
 	void methodI();
 	void methodII();
 	void clasifyMethodI();
+	void clasifyMethodII();
 };
 
 #endif

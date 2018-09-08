@@ -1,5 +1,5 @@
-#ifndef CLASSIFICATION_HH
-#define CLASSIFICTAION_HH
+#ifndef CLASSIFICATION_II_H
+#define CLASSIFICATION_II_H
 
 #include <iostream>
 #include <fstream>
@@ -8,34 +8,32 @@
 #include <cmath>
 #include <vector>
 
-#include "MinutiaeInformationI.h"
+#include "MinutiaeInformationII.h"
 
 using namespace std;
 
-class ClassificationI {
+class ClassificationII {
 private:
 	string filename;
 	string fingerName;
 	string rootPath;
 	string filepath;
 	string verifyPath;
-	vector<MinutiaeInformationI> sample;
-	vector<MinutiaeInformationI> pattern;
-
-	int check;
+	vector<MinutiaeInformationII> sample;
+	vector<MinutiaeInformationII> pattern;
 
 	std::string getFilename();
 	std::string getRootFolder();
 	std::string getFingerName();
 	void getSampleInformation();
-	int compareToFinger(const vector<MinutiaeInformationI> otherFinger);
-	int findTheLowest(vector<MinutiaeInformationI> otherFinger, MinutiaeInformationI minutiae);
+	int compareToFinger(const vector<MinutiaeInformationII> otherFinger);
+	int findTheLowest(vector<MinutiaeInformationII> otherFinger, MinutiaeInformationII minutiae);
 	bool isTrueGroup();
 	void readPattern();
 
 	void showResult(bool result);
 public:
-	ClassificationI(string filepath, string verifyPath);
+	ClassificationII(string filepath, string verifyPath);
 	void getClassification();
 };
 

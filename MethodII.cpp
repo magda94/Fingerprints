@@ -44,7 +44,8 @@ void MethodII::getXYCoordinates(std::string fingerToFind, int * tabXY) {
 
 void MethodII::readFromFile(std::string fingerToFind, int* tabXY) {
 	ifstream file;
-	std::string fingerToFindPath = "FingerDatabase/" + fingerToFind + ".txt";
+	std::string fingerToFindPath = "FingerDatabase/" + fingerToFind + "M1.txt";
+	std::cout << "FINGER 2: " << fingerToFindPath << std::endl;
 
 	file.open(fingerToFindPath);
 
