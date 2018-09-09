@@ -63,7 +63,6 @@ void Filter::addNeighbours(int x, int y) {
 				continue;
 			if ((int)tempFingerMask.at<uchar>(x + i, y + j) == 0) {
 				counter++;
-				//std::cout << "POINT: X: " << x + i << " Y: " << y + j <<"  COUNTER: "<<counter<< std::endl;
 				tempFingerMask.at<uchar>(x + i, y + j) = 127;
 				buforList.push_back(Point2i(x+i,y+j));
 			}
@@ -89,8 +88,6 @@ double Filter::getMean()
 double Filter::getVariance(double mean)
 {
 	double variance = 0.0;
-
-	std::cout << "VALUE image: " << (double)this->image.at<uchar>(1, 0) << std::endl;
 
 	for (int i = 0; i < this->image.rows; i++) {
 		for (int j = 0; j < this->image.cols; j++) {
@@ -150,8 +147,6 @@ Mat Filter::centerMask(Mat maskImage) {
 
 	this->heightOffset = move_height;
 	this->widthOffset = move_width;
-
-	std::cout << "HOFFSET " << this->heightOffset << " WOFFSET " << this->widthOffset << std::endl;
 
 	Mat trans_mat = (Mat_<double>(2, 3) << 1, 0, move_width, 0, 1, move_height);
 	bitwise_not(temp, temp);
@@ -259,7 +254,6 @@ Mat Filter::chooseBiggest(Mat fingerMask) {
 						buforList.pop_back();
 						this->addNeighbours(next.x, next.y);
 					}
-					std::cout << "\nCOUNTER: " << counter << std::endl;
 					if (counter > 10000) {
 						flag = true;
 						while (!biggest.empty()) {
@@ -315,13 +309,11 @@ Mat Filter::reduceHoles() {
 	Mat temp2;
 
 	bitwise_not(this->image, this->image);
-	imshow("BEFORE REDUCE", this->image);
 	Mat element = getStructuringElement(shape, Size(size,size), Point(1,1));
 	morphologyEx(this->image, temp, operation, element);
 	this->image = temp.clone();
 	bitwise_not(this->image, this->image);
 
-	imshow("REDUCE HOLES",this->image);
 	return this->image;
 }
 
@@ -339,11 +331,6 @@ Mat Filter::normalize()
 		}
 	}
 
-
-	std::cout << "MEAN: " << mean << std::endl;
-	std::cout << "VARIANCE: " << variance << std::endl;
-
-	//imshow("FUNCTION NORMALIZED IMAGE",this->image);
 	return this->image;
 }
 

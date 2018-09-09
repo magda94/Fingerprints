@@ -43,7 +43,8 @@ void ClassificationII::getSampleInformation() {
 	string sampleName = this->filename + "M2.txt";
 
 	sampleFile.open(sampleName);
-	int r, phi, type;
+	int type;
+	double r, phi;
 
 	while (sampleFile >> type >> r >> phi) {
 		this->sample.push_back(MinutiaeInformationII(type, r, phi));
@@ -57,12 +58,10 @@ void ClassificationII::getSampleInformation() {
 int ClassificationII::compareToFinger(vector<MinutiaeInformationII> otherFinger) {
 	int counter = 0;
 
-	int windowSize = 50;
+	int windowSize = 1;
 
-	std::cout << "FILE SIZE " << this->pattern.size() <<std::endl;
 	for (int i = 0; i < this->sample.size(); i++) {
 		int index = this->findTheLowest(otherFinger, this->sample.at(i));
-		std::cout << "INDEX " << index << std::endl;
 
 		int patternR = otherFinger.at(index).getR();
 		int patternPhi = otherFinger.at(index).getPhi();
@@ -114,13 +113,12 @@ bool ClassificationII::isTrueGroup() {
 
 void ClassificationII::readPattern() {
 	std::string patternPath = this->verifyPath + "M2.txt";
-	std::cout << "PATTERN " << patternPath << std::endl;
 	ifstream patternFile;
 	patternFile.open(patternPath);
-	int r, phi, type;
+	int type;
+	double r, phi;
 
 	while (patternFile >> type >> r >> phi) {
-		std::cout << "HFJFH" << std::endl;
 		this->pattern.push_back(MinutiaeInformationII(r, phi, type));
 	}
 
@@ -128,15 +126,15 @@ void ClassificationII::readPattern() {
 }
 
 void ClassificationII::showResult(bool result) {
-	std::cout << "\nMETHOD 2: " << std::endl;
-	std::cout << "FILE: " << this->filename << std::endl;
-	std::cout << "VERIFYFILE: " << this->verifyPath << std::endl;
+	std::cout << "\nMETODA 2: " << std::endl;
+	std::cout << "PROBKA: " << this->filename << std::endl;
+	std::cout << "WZORZEC: " << this->verifyPath << std::endl;
 
 
 	if (result)
-		std::cout << "THIS IS PERSON " << this->verifyPath << std::endl;
+		std::cout << "TO JEST OSOBA  " << this->verifyPath << std::endl;
 	else
-		std::cout << "THIS IS NOT PERSON " << this->verifyPath << std::endl;
+		std::cout << "TO NIE JEST OSOBA " << this->verifyPath << std::endl;
 }
 
 /*******************************************

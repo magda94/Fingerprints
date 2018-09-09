@@ -28,11 +28,9 @@ int* ImageClass::getMinAndMax(const Mat& histogram) {
 }
 
 double* ImageClass::calculateHistogramTab(const Mat& histogram, int* MinAndMax,double* histogramTab) {
-	std::cout << MinAndMax[0] << std::endl;
 	for (int i = MinAndMax[0]; i <= MinAndMax[1]; i++) {
 		histogramTab[i - MinAndMax[0]] = histogram.at<double>(i);
 	}
-	std::cout << histogramTab[100] << std::endl;
 	return histogramTab;
 }
 
@@ -130,7 +128,6 @@ void ImageClass::moveCore() {
 			bool isPresent = false;
 			while (newFile >> name2 >> x2 >> y2) {
 				if (name2 == findFinger) {
-					std::cout << "FOUND" << std::endl;
 					isPresent = true;
 					break;
 				}
@@ -237,12 +234,8 @@ void ImageClass::binaryImage() {
 	int length = (MinAndMax[1] - MinAndMax[0]) + 1;
 	double* histogramTab = new double[length];
 	this->calculateHistogramTab(histogram, MinAndMax, histogramTab);
-	std::cout << histogramTab[0] << std::endl;
-	std::cout << "BEFORE SMOOTH\n";
 	histogramTab = this->smoothHistogram(histogramTab, MinAndMax);
-	std::cout << "AFTER SMOOTH\n";
 	double threshold = this->calculateThreshold(histogramTab, MinAndMax);
-	std::cout << "THRESHOLD: " << threshold;
 
 	Mat temp;
 	cv::threshold(this->image, this->image, 5, 255, CV_THRESH_BINARY_INV );
@@ -295,7 +288,6 @@ void ImageClass::drawCore(){
 	}
 
 	if (flag) {
-		std::cout << name << "x: " << x << " y: " << y << std::endl;
 
 		Mat temp;
 		temp = this->image.clone();
@@ -303,10 +295,10 @@ void ImageClass::drawCore(){
 
 		circle(temp, Point(x, y), 5, Scalar(0, 255, 0));
 
-		imshow("CORE DRAW", temp);
+		imshow("RDZEN PALCA", temp);
 	}
 	else {
-		std::cout << "There is no core point for this finger" << std::endl;
+		std::cout << "NIE MOZNA WYODREBNIC RDZENIA." << std::endl;
 	}
 
 }

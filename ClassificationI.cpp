@@ -56,7 +56,7 @@ void ClassificationI::getSampleInformation() {
 int ClassificationI::compareToFinger(vector<MinutiaeInformationI> otherFinger) {
 	int counter = 0;
 
-	int windowSize = 9;
+	int windowSize = 5;
 
 	for (int i = 0; i < this->sample.size(); i++) {
 		int index = this->findTheLowest(otherFinger, this->sample.at(i));
@@ -126,15 +126,15 @@ void ClassificationI::readPattern() {
 }
 
 void ClassificationI::showResult(bool result) {
-	std::cout << "\nMETHOD 1: " << std::endl;
-	std::cout << "FILE: " << this->filename << std::endl;
-	std::cout << "VERIFYFILE: " << this->verifyPath << std::endl;
+	std::cout << "\nMETODA 1: " << std::endl;
+	std::cout << "PROBKA: " << this->filename << std::endl;
+	std::cout << "WZORZEC: " << this->verifyPath << std::endl;
 
 
 	if (result)
-		std::cout << "THIS IS PERSON " << this->verifyPath << std::endl;
+		std::cout << "TO JEST OSOBA " << this->verifyPath << std::endl;
 	else
-		std::cout << "THIS IS NOT PERSON " << this->verifyPath << std::endl;
+		std::cout << "TO NIE JEST OSOBA " << this->verifyPath << std::endl;
 }
 
 /*******************************************

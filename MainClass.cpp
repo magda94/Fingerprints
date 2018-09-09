@@ -59,8 +59,6 @@ char getFingerCharacter() {
 		}
 		std::cout << std::endl;
 		std::cout << "PODALES ZLY PALEC " << std::endl;
-		//system("pause");
-		//system("cls");
 	}
 
 }
@@ -79,7 +77,6 @@ void actionController(char action) {
 
 		std::string verifyPath = createPath(personNumber, getFingerCharacter());
 
-		std::cout << "VERIFY PATH: " << verifyPath << std::endl;
 		doAction(searchPath, verifyPath);
 
 		break;
@@ -97,8 +94,6 @@ void actionController(char action) {
 	}
 
 	}
-	//system("pause");
-	//system("cls");
 }
 
 void doAction(std::string searchPath, std::string verifyPath) {
@@ -106,8 +101,6 @@ void doAction(std::string searchPath, std::string verifyPath) {
 
 	Mat img = imread(filepath, CV_LOAD_IMAGE_GRAYSCALE);
 
-	imshow("ORG", img);
-	std::cout << "Create ImageClass\n\n";
 	ImageClass imageClass = ImageClass(img, filepath, verifyPath);
 	imageClass.showImage();
 	imageClass.filtrImage();
@@ -117,11 +110,10 @@ void doAction(std::string searchPath, std::string verifyPath) {
 	imageClass.skeletozation();
 	imageClass.drawCore();
 	//imageClass.coreDetection();
-	imageClass.findMinutiae();
+	imageClass.findMinutiae()
 	imageClass.methodI();
 	imageClass.methodII();
 	imageClass.clasifyMethodI();
 	imageClass.clasifyMethodII();
 
-	imageClass.showImage();
 }

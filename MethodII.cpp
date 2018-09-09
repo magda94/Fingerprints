@@ -45,7 +45,6 @@ void MethodII::getXYCoordinates(std::string fingerToFind, int * tabXY) {
 void MethodII::readFromFile(std::string fingerToFind, int* tabXY) {
 	ifstream file;
 	std::string fingerToFindPath = "FingerDatabase/" + fingerToFind + "M1.txt";
-	std::cout << "FINGER 2: " << fingerToFindPath << std::endl;
 
 	file.open(fingerToFindPath);
 
@@ -134,7 +133,7 @@ void MethodII::writeToFile(const vector<Point2i> endPointsVector, const vector<P
 	this->getXYCoordinates(fingerToFind, tabXY);
 
 	if (tabXY[0] == -1 && tabXY[1] == -1) {
-		std::cout << "There is no core point. Cannot do methodII" << std::endl;
+		std::cout << "NIE MA RDZENIA. NIE MOZNA UZYC METODY 2!" << std::endl;
 		goto endOfFunction;
 	}
 
