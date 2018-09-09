@@ -110,7 +110,7 @@ void doAction(std::string searchPath, std::string verifyPath) {
 	imageClass.skeletozation();
 	imageClass.drawCore();
 	//imageClass.coreDetection();
-	imageClass.findMinutiae()
+	imageClass.findMinutiae();
 	imageClass.methodI();
 	imageClass.methodII();
 	imageClass.clasifyMethodI();
